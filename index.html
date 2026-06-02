@@ -291,6 +291,38 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
 }
 .cat-bar.out{background:var(--nhn-red);}
 
+/* Budget card — 용돈 예산 */
+.budget-row{
+  display:grid; grid-template-columns:1fr 1fr; gap:1px;
+  background:var(--line-soft); border:1px solid var(--line-soft);
+  margin-bottom:18px;
+}
+@media (max-width:600px){.budget-row{grid-template-columns:1fr;}}
+.budget-card{
+  background:var(--surface); padding:16px 20px;
+  display:grid; grid-template-columns:auto 1fr; gap:14px; align-items:center;
+}
+.budget-card.single{grid-template-columns:auto 1fr;}
+.budget-card .b-icon{
+  width:36px; height:36px; background:var(--ink); color:#fff;
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:700; letter-spacing:0;
+}
+.budget-card.ms .b-icon{background:var(--nhn-blue);}
+.budget-card.bon .b-icon{background:var(--ink);}
+.budget-card .b-body{display:flex; flex-direction:column; gap:4px; min-width:0;}
+.budget-card .b-head{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;}
+.budget-card .b-title{font-size:11px; font-weight:700; letter-spacing:0.06em; color:var(--ink-4); text-transform:uppercase;}
+.budget-card .b-used{font-size:18px; font-weight:700; color:var(--ink); font-feature-settings:"tnum"; letter-spacing:-0.01em;}
+.budget-card .b-of{font-size:11px; color:var(--ink-4); font-weight:600;}
+.budget-card .b-bar{position:relative; height:6px; background:var(--surface-2); margin-top:2px;}
+.budget-card .b-bar-fill{position:absolute; left:0; top:0; height:100%; background:var(--ink); transition:width var(--dur) var(--ease);}
+.budget-card.ms .b-bar-fill{background:var(--nhn-blue);}
+.budget-card.over .b-bar-fill{background:var(--nhn-red);}
+.budget-card .b-foot{display:flex; justify-content:space-between; font-size:11px; color:var(--ink-4); font-weight:600;}
+.budget-card .b-pct{font-feature-settings:"tnum";}
+.budget-card.over .b-pct{color:var(--nhn-red); font-weight:700;}
+
 /* Share (카테고리 비중) — 가로 100% stacked bar + 리스트 */
 .share-wrap{
   background:var(--surface); border:1px solid var(--ink); padding:20px 22px;
@@ -418,6 +450,7 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
 <main>
   <!-- ============ 전체 요약 ============ -->
   <div class="tab-pane active" id="tab-summary">
+    <div class="budget-row" id="sum-budget"></div>
     <div class="kpi-row">
       <div class="kpi"><div class="kpi-label">월 입금</div><div class="kpi-value in" id="sum-in">0원</div><div class="kpi-sub" id="sum-in-cnt">0건</div></div>
       <div class="kpi"><div class="kpi-label">월 출금</div><div class="kpi-value out" id="sum-out">0원</div><div class="kpi-sub" id="sum-out-cnt">0건</div></div>
@@ -474,6 +507,7 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
   </div>
 
   <div class="tab-pane" id="tab-bon">
+    <div id="budget-bon"></div>
     <div class="input-card">
       <div class="input-card-head"><div class="input-card-title">본 새 거래</div><div class="input-card-sub">결제수단이 자동으로 본*만 표시</div></div>
       <div class="input-grid" data-scope="bon">
@@ -491,6 +525,7 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
   </div>
 
   <div class="tab-pane" id="tab-ms">
+    <div id="budget-ms"></div>
     <div class="input-card">
       <div class="input-card-head"><div class="input-card-title">민성 새 거래</div><div class="input-card-sub">결제수단이 자동으로 민*만 표시</div></div>
       <div class="input-grid" data-scope="ms">
@@ -553,6 +588,9 @@ const DEFAULT_FILTERS = {
 };
 const MONTHS = ['2026-06','2026-07','2026-08','2026-09','2026-10','2026-11','2026-12'];
 const STORAGE_KEY = 'budget-2026-data-v1';
+// 용돈 예산 (월별)
+const BUDGET = { bon: 300000, ms: 300000 };
+const ALLOWANCE_CAT = '용돈';
 
 /* =========================================================
    State (Firestore 기반)
@@ -726,7 +764,11 @@ function addTx(btn){
   if (!pay) return snack('결제수단을 선택하세요');
   if (!amt || amt <= 0) return snack('금액을 입력하세요');
 
-  const tx = { id:Date.now()+'-'+Math.random().toString(36).slice(2,7), date, io, cat, pay, amt, memo, createdAt:new Date().toISOString() };
+  // owner — 어떤 탭에서 입력했는지로 본/민성 구분 (생활비 탭은 빈 값)
+  const scope = card.dataset.scope;
+  const owner = scope === 'bon' ? '본' : (scope === 'ms' ? '민성' : '');
+
+  const tx = { id:Date.now()+'-'+Math.random().toString(36).slice(2,7), date, io, cat, pay, amt, memo, owner, createdAt:new Date().toISOString() };
   STATE.tx.push(tx);
   saveState();
   // 폼 초기화 (날짜·io는 유지)
@@ -747,10 +789,21 @@ function delTx(id){
 /* =========================================================
    Render — Lists & Summary
 ========================================================= */
+// 거래의 owner 판정 — 명시값 우선, 없으면 결제수단 prefix로 추정
+function txOwner(t){
+  if (t.owner === '본' || t.owner === '민성') return t.owner;
+  if (t.pay && t.pay.startsWith('본')) return '본';
+  if (t.pay && t.pay.startsWith('민')) return '민성';
+  return '';
+}
+
 function txForScope(scope){
-  // 모든 탭에서 모든 결제수단의 거래 표시 (월 필터만 적용)
-  // 본/민성 탭은 입력 편의용으로 분리, 목록은 동일
-  return STATE.tx.filter(t => t.date.startsWith(currentMonth));
+  return STATE.tx.filter(t => {
+    if (!t.date.startsWith(currentMonth)) return false;
+    if (scope === 'bon') return txOwner(t) === '본';
+    if (scope === 'ms')  return txOwner(t) === '민성';
+    return true; // 생활비 = 전체
+  });
 }
 function applyFilter(txs, f){
   return txs.filter(t => {
@@ -869,9 +922,9 @@ function renderSummary(){
       in:fs.filter(t=>t.io==='in').reduce((s,t)=>s+t.amt,0),
     };
   };
-  const bon = stat(t=>t.pay && t.pay.startsWith('본'));
-  const ms  = stat(t=>t.pay && t.pay.startsWith('민'));
-  const sup = stat(t=>t.pay === '지원금' || (!t.pay?.startsWith('본') && !t.pay?.startsWith('민')));
+  const bon = stat(t => txOwner(t) === '본');
+  const ms  = stat(t => txOwner(t) === '민성');
+  const sup = stat(t => txOwner(t) === ''); // 생활비/기타
   bmBody.innerHTML = `<tr><th>구분</th><th class="num">건수</th><th class="num">입금</th><th class="num">출금</th></tr>
     <tr><td><b>본</b></td><td class="num">${bon.cnt}</td><td class="num" style="color:var(--nhn-blue);">${fmtMoney(bon.in)}</td><td class="num" style="color:var(--nhn-red);">${fmtMoney(bon.out)}</td></tr>
     <tr><td><b>민성</b></td><td class="num">${ms.cnt}</td><td class="num" style="color:var(--nhn-blue);">${fmtMoney(ms.in)}</td><td class="num" style="color:var(--nhn-red);">${fmtMoney(ms.out)}</td></tr>
@@ -934,7 +987,7 @@ function renderPills(){
 let chartTrend, chartCat;
 function drawCharts(){
   // 1. 월별 입금/출금
-  const labels = MONTHS.map(m => m.slice(5)+'월');
+  const labels = MONTHS.map(m => parseInt(m.slice(5))+'월');
   const inArr = MONTHS.map(m => STATE.tx.filter(t=>t.io==='in' && t.date.startsWith(m)).reduce((s,t)=>s+t.amt,0));
   const outArr = MONTHS.map(m => STATE.tx.filter(t=>t.io==='out' && t.date.startsWith(m)).reduce((s,t)=>s+t.amt,0));
   const ctx1 = document.getElementById('chart-trend');
@@ -956,11 +1009,16 @@ function drawCharts(){
   // 2. 카테고리별 추이
   const cats = [...new Set(STATE.tx.filter(t=>t.io==='out').map(t=>t.cat))];
   const palette = ['#0F80F6','#EB453D','#01A058','#FF9000','#FCF683','#7c2d12','#191919','#545454','#a1a1a1','#0c8474','#c026d3','#0891b2'];
+  // 카테고리별 추이 — 데이터 없는 월은 null (선 끊김)
   const ds = cats.map((c,i) => ({
     label:c,
-    data:MONTHS.map(m => STATE.tx.filter(t=>t.io==='out' && t.cat===c && t.date.startsWith(m)).reduce((s,t)=>s+t.amt,0)),
+    data: MONTHS.map(m => {
+      const arr = STATE.tx.filter(t=>t.io==='out' && t.cat===c && t.date.startsWith(m));
+      if (arr.length === 0) return null;
+      return arr.reduce((s,t)=>s+t.amt,0);
+    }),
     borderColor:palette[i%palette.length], backgroundColor:'transparent',
-    borderWidth:2, pointRadius:2.5, tension:0.25,
+    borderWidth:2, pointRadius:2.5, tension:0.25, spanGaps:false,
   }));
   const ctx2 = document.getElementById('chart-cat');
   if (chartCat) chartCat.destroy();
@@ -977,9 +1035,50 @@ function drawCharts(){
   });
 }
 
+/* 용돈 예산 카드 렌더 */
+function renderBudgetCard(who){
+  // who: 'bon' | 'ms'
+  const name = who === 'bon' ? '본' : '민성';
+  const budget = BUDGET[who];
+  const used = STATE.tx
+    .filter(t => t.date.startsWith(currentMonth) && t.io === 'out' && t.cat === ALLOWANCE_CAT && txOwner(t) === name)
+    .reduce((s,t)=>s+t.amt,0);
+  const pct = budget ? Math.min(100, Math.round(used*100/budget)) : 0;
+  const over = used > budget;
+  const remain = budget - used;
+  return `<div class="budget-card ${who} ${over?'over':''}">
+    <div class="b-icon">${name}</div>
+    <div class="b-body">
+      <div class="b-head">
+        <span class="b-title">${name} 용돈 예산</span>
+      </div>
+      <div class="b-head">
+        <span class="b-used">${(used).toLocaleString('ko-KR')}원</span>
+        <span class="b-of">/ ${budget.toLocaleString('ko-KR')}원</span>
+      </div>
+      <div class="b-bar"><div class="b-bar-fill" style="width:${pct}%;"></div></div>
+      <div class="b-foot">
+        <span class="b-pct">${pct}% 사용</span>
+        <span>${over ? '초과 '+Math.abs(remain).toLocaleString('ko-KR')+'원' : '잔여 '+remain.toLocaleString('ko-KR')+'원'}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderBudgets(){
+  // 본 탭 / 민성 탭 → 단일 카드 (가로 폭 full)
+  document.getElementById('budget-bon').innerHTML =
+    '<div class="budget-row" style="grid-template-columns:1fr;">' + renderBudgetCard('bon') + '</div>';
+  document.getElementById('budget-ms').innerHTML =
+    '<div class="budget-row" style="grid-template-columns:1fr;">' + renderBudgetCard('ms') + '</div>';
+  // 전체 요약 — 본/민성 둘 다
+  document.getElementById('sum-budget').innerHTML = renderBudgetCard('bon') + renderBudgetCard('ms');
+}
+
 function renderAll(){
   refreshInputCards();
   renderPills();
+  renderBudgets();
   renderFilterChips('all'); renderList('all');
   renderFilterChips('bon'); renderList('bon');
   renderFilterChips('ms');  renderList('ms');
