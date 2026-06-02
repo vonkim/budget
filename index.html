@@ -584,7 +584,7 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
    설정 — 기본 카테고리·결제수단 (필터 관리에서 수정 가능)
 ========================================================= */
 const DEFAULT_FILTERS = {
-  catOut: ['외식','카페','마트','집','교통비','여행','경조비','기타'], // '용돈'은 본/민성 탭 전용 — 출금 필터에서 제외
+  catOut: ['외식','카페','마트','집','교통비','용돈','여행','경조비','기타'],
   catIn:  ['월급','용돈','지원금','기타'],
   pay:    ['본신신','본삼신','본신체','민삼신','민신체','지원금'],
 };
@@ -677,13 +677,6 @@ function formatAmount(input){
 }
 
 function populateCatSelect(sel, io, scope){
-  // 본/민성 탭은 항상 '용돈' 고정 (선택 불가)
-  if (scope === 'bon' || scope === 'ms') {
-    sel.innerHTML = '<option value="용돈" selected>용돈 (고정)</option>';
-    sel.value = '용돈';
-    sel.disabled = true;
-    return;
-  }
   sel.disabled = false;
   const opts = STATE.filters[io==='out'?'catOut':'catIn'];
   sel.innerHTML = '<option value="">카테고리</option>' + opts.map(c => `<option value="${c}">${c}</option>`).join('');
@@ -1047,13 +1040,13 @@ function drawCharts(){
   });
 }
 
-/* 용돈 예산 카드 렌더 */
+/* 용돈 예산 카드 렌더 — 본/민성 탭의 모든 출금이 용돈 사용액 */
 function renderBudgetCard(who){
   // who: 'bon' | 'ms'
   const name = who === 'bon' ? '본' : '민성';
   const budget = BUDGET[who];
   const used = STATE.tx
-    .filter(t => t.date.startsWith(currentMonth) && t.io === 'out' && t.cat === ALLOWANCE_CAT && txOwner(t) === name)
+    .filter(t => t.date.startsWith(currentMonth) && t.io === 'out' && txOwner(t) === name)
     .reduce((s,t)=>s+t.amt,0);
   const pct = budget ? Math.min(100, Math.round(used*100/budget)) : 0;
   const over = used > budget;
@@ -1195,11 +1188,13 @@ async function init(){
       STATE.filters = (d.filters && typeof d.filters === 'object')
         ? Object.assign(JSON.parse(JSON.stringify(DEFAULT_FILTERS)), d.filters)
         : JSON.parse(JSON.stringify(DEFAULT_FILTERS));
-      // 마이그레이션 — 카테고리 출금 필터에서 '용돈' 자동 제거 (본/민성 탭 전용으로 이동)
-      if (Array.isArray(STATE.filters.catOut) && STATE.filters.catOut.includes('용돈')) {
-        STATE.filters.catOut = STATE.filters.catOut.filter(c => c !== '용돈');
-        await window.fb.save({ tx: STATE.tx, filters: STATE.filters });
+      // 필터 누락 시 기본값 보충 (사용자가 지운 필터는 복원하지 않음)
+      let _migrated = false;
+      if (Array.isArray(STATE.filters.catOut) && !STATE.filters.catOut.includes('용돈')) {
+        STATE.filters.catOut.splice(5, 0, '용돈');
+        _migrated = true;
       }
+      if (_migrated) await window.fb.save({ tx: STATE.tx, filters: STATE.filters });
       _lastSavedJson = JSON.stringify({ tx: STATE.tx, filters: STATE.filters });
     } else {
       // 클라우드 비어있음 — localStorage 데이터 있으면 마이그레이션
