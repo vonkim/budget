@@ -344,6 +344,22 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
 .plan-card-pct{font-size:11px; font-weight:700; color:var(--ink-3); margin-top:4px; font-feature-settings:"tnum";}
 .plan-card-pct.over{color:var(--nhn-red); font-weight:800;}
 
+/* 색상 변형 — 본=초록, 민성=핑크, 생활비=blue */
+.plan-card.color-green .plan-card-label,
+.plan-card.color-green .plan-card-amt{color:var(--nhn-green);}
+.plan-card.color-green .plan-card-bar-fill{background:var(--nhn-green);}
+.plan-card.color-green .plan-card-pct:not(.over){color:var(--nhn-green);}
+
+.plan-card.color-pink .plan-card-label,
+.plan-card.color-pink .plan-card-amt{color:#EC4899;}
+.plan-card.color-pink .plan-card-bar-fill{background:#EC4899;}
+.plan-card.color-pink .plan-card-pct:not(.over){color:#EC4899;}
+
+.plan-card.color-blue .plan-card-label,
+.plan-card.color-blue .plan-card-amt{color:var(--nhn-blue);}
+.plan-card.color-blue .plan-card-bar-fill{background:var(--nhn-blue);}
+.plan-card.color-blue .plan-card-pct:not(.over){color:var(--nhn-blue);}
+
 .plan-cards-foot{
   padding-top:18px; border-top:1px solid var(--line-soft);
 }
@@ -697,9 +713,9 @@ const ALLOWANCE_CAT = '용돈';
 const MONTHLY_TOTAL = 2000000;
 // 사용처별 예산
 const SPEND_PLAN = [
-  { id:'bon-allow',  label:'본 용돈',         amount:300000, owner:'본'   },
-  { id:'ms-allow',   label:'민성 용돈',        amount:300000, owner:'민성' },
-  { id:'living',     label:'생활비',           amount:500000, owner:''     },
+  { id:'bon-allow',  label:'본 용돈',         amount:300000, owner:'본',   color:'green' },
+  { id:'ms-allow',   label:'민성 용돈',        amount:300000, owner:'민성', color:'pink'  },
+  { id:'living',     label:'생활비',           amount:500000, owner:'',     color:'blue'  },
   { id:'fixed-sin',  label:'고정비 (신용카드)', amount:600000, note:'임대관리비 30 · 본 교통 20 · 고정 10' },
   { id:'fixed-che',  label:'고정비 (체크카드)', amount:300000, note:'대출이자 20 · 민성 교통 10' },
 ];
@@ -1229,7 +1245,7 @@ function renderPlan(){
     const used = spendUsed(p);
     const pct = Math.min(100, Math.round(used*100/p.amount));
     const over = used > p.amount;
-    return `<div class="plan-card">
+    return `<div class="plan-card${p.color ? ' color-'+p.color : ''}">
       <div class="plan-card-label">${escapeHtml(p.label)}</div>
       <div class="plan-card-amt">${used.toLocaleString('ko-KR')}<small>/ ${(p.amount/10000)}만</small></div>
       <div class="plan-card-bar"><div class="plan-card-bar-fill ${over?'over':''}" style="width:${pct}%;"></div></div>
