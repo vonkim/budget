@@ -292,82 +292,84 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
 }
 .cat-bar.out{background:var(--nhn-red);}
 
-/* ===== 월 가계 예산 (Plan) — 최상단 ===== */
+/* ===== 월 가계 예산 (Plan) — NDS 톤 ===== */
 .plan-section{
-  background:
-    radial-gradient(ellipse at top left, rgba(252,246,131,0.45), transparent 60%),
-    linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-  color:#fff;
-  padding:22px 24px;
-  border:3px solid var(--nhn-yellow);
-  margin-bottom:22px;
-  box-shadow:0 12px 30px rgba(0,0,0,0.12);
+  background:var(--surface);
+  color:var(--ink-2);
+  padding:24px 26px;
+  border:1px solid var(--ink);
+  margin-bottom:24px;
 }
 .plan-head{
-  display:grid; grid-template-columns:1fr auto; gap:20px; align-items:center;
-  margin-bottom:18px;
+  display:grid; grid-template-columns:1fr auto; gap:20px; align-items:flex-end;
+  margin-bottom:20px;
+  padding-bottom:16px;
+  border-bottom:1px solid var(--line-soft);
 }
-@media (max-width:680px){.plan-head{grid-template-columns:1fr;}}
+@media (max-width:680px){.plan-head{grid-template-columns:1fr; align-items:flex-start;}}
 .plan-eyebrow{
-  font-size:11px; font-weight:800; letter-spacing:0.16em; color:var(--nhn-yellow);
+  font-size:11px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase;
+  color:var(--ink-4);
   margin-bottom:6px;
 }
-.plan-title{font-size:22px; font-weight:900; color:#fff; letter-spacing:-0.02em;}
-.plan-title span{color:var(--nhn-yellow);}
+.plan-title{font-size:22px; font-weight:700; color:var(--ink); letter-spacing:-0.02em;}
+.plan-title span{color:var(--nhn-blue);}
 .plan-total{min-width:280px;}
-.plan-total-num{font-size:14px; color:rgba(255,255,255,0.7); font-weight:600; margin-bottom:6px;}
-.plan-total-num b{color:#fff; font-size:24px; font-weight:900; font-feature-settings:"tnum"; margin-right:2px;}
-.plan-total-bar{height:10px; background:rgba(255,255,255,0.12); margin-bottom:6px; position:relative; overflow:hidden;}
-.plan-total-fill{position:absolute; left:0; top:0; height:100%; background:linear-gradient(90deg, var(--nhn-yellow), #FFD466); transition:width 400ms cubic-bezier(.32,.72,0,1);}
-.plan-total-fill.over{background:linear-gradient(90deg, var(--nhn-red), #FF7373);}
-.plan-total-meta{font-size:11px; color:rgba(255,255,255,0.65); font-weight:700;}
-.plan-total-meta span{color:#fff;}
+.plan-total-num{font-size:13px; color:var(--ink-4); font-weight:600; margin-bottom:6px; font-feature-settings:"tnum";}
+.plan-total-num b{color:var(--ink); font-size:22px; font-weight:900; margin-right:2px;}
+.plan-total-bar{height:8px; background:var(--surface-2); margin-bottom:6px; position:relative; overflow:hidden;}
+.plan-total-fill{position:absolute; left:0; top:0; height:100%; background:var(--ink); transition:width 400ms cubic-bezier(.32,.72,0,1);}
+.plan-total-fill.over{background:var(--nhn-red);}
+.plan-total-meta{font-size:11px; color:var(--ink-4); font-weight:700; font-feature-settings:"tnum";}
+.plan-total-meta span{color:var(--ink);}
 
 .plan-cards{
-  display:grid; grid-template-columns:repeat(5, 1fr); gap:8px;
-  margin-bottom:18px;
+  display:grid; grid-template-columns:repeat(5, 1fr); gap:1px;
+  background:var(--line-soft);
+  border:1px solid var(--line-soft);
+  margin-bottom:20px;
 }
 @media (max-width:1024px){.plan-cards{grid-template-columns:repeat(2, 1fr);}}
 @media (max-width:560px){.plan-cards{grid-template-columns:1fr;}}
 .plan-card{
-  background:rgba(255,255,255,0.06); padding:12px 14px;
-  border:1px solid rgba(255,255,255,0.1);
+  background:var(--surface); padding:14px 16px;
 }
-.plan-card-label{font-size:11px; font-weight:800; letter-spacing:0; color:rgba(255,255,255,0.65);}
-.plan-card-amt{font-size:18px; font-weight:900; color:#fff; margin-top:4px; font-feature-settings:"tnum";}
-.plan-card-amt small{font-size:11px; color:rgba(255,255,255,0.55); font-weight:700; margin-left:3px;}
-.plan-card-bar{height:5px; background:rgba(255,255,255,0.12); margin-top:8px; position:relative; overflow:hidden;}
-.plan-card-bar-fill{position:absolute; left:0; top:0; height:100%; background:var(--nhn-yellow); transition:width 400ms cubic-bezier(.32,.72,0,1);}
+.plan-card-label{font-size:11px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--ink-4);}
+.plan-card-amt{font-size:18px; font-weight:800; color:var(--ink); margin-top:4px; font-feature-settings:"tnum"; letter-spacing:-0.01em;}
+.plan-card-amt small{font-size:11px; color:var(--ink-4); font-weight:700; margin-left:3px;}
+.plan-card-bar{height:5px; background:var(--surface-2); margin-top:8px; position:relative; overflow:hidden;}
+.plan-card-bar-fill{position:absolute; left:0; top:0; height:100%; background:var(--ink); transition:width 400ms cubic-bezier(.32,.72,0,1);}
 .plan-card-bar-fill.over{background:var(--nhn-red);}
-.plan-card-meta{font-size:10px; color:rgba(255,255,255,0.55); margin-top:6px; line-height:1.5;}
-.plan-card-pct{font-size:11px; font-weight:800; color:var(--nhn-yellow); margin-top:3px;}
-.plan-card-pct.over{color:#FCA5A5;}
+.plan-card-meta{font-size:10px; color:var(--ink-4); margin-top:6px; line-height:1.5;}
+.plan-card-pct{font-size:11px; font-weight:700; color:var(--ink-3); margin-top:4px; font-feature-settings:"tnum";}
+.plan-card-pct.over{color:var(--nhn-red); font-weight:800;}
 
 .plan-cards-foot{
-  padding-top:16px; border-top:1px solid rgba(255,255,255,0.12);
+  padding-top:18px; border-top:1px solid var(--line-soft);
 }
 .plan-foot-label{
-  font-size:11px; font-weight:800; letter-spacing:0.06em; color:rgba(255,255,255,0.65);
-  margin-bottom:10px;
+  font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--ink-4); margin-bottom:10px;
 }
 .plan-card-grid{
-  display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;
+  display:grid; grid-template-columns:repeat(3, 1fr); gap:1px;
+  background:var(--line-soft);
+  border:1px solid var(--line-soft);
 }
 @media (max-width:760px){.plan-card-grid{grid-template-columns:1fr;}}
 .plan-cl{
-  background:rgba(255,255,255,0.06); padding:12px 14px;
-  border:1px solid rgba(255,255,255,0.12);
+  background:var(--surface); padding:14px 16px;
 }
 .plan-cl-head{display:flex; align-items:baseline; justify-content:space-between; gap:8px;}
-.plan-cl-name{font-size:13px; font-weight:900; color:#fff;}
-.plan-cl-pct{font-size:11px; font-weight:800; color:var(--nhn-yellow);}
-.plan-cl-pct.over{color:#FCA5A5;}
-.plan-cl-amt{font-size:15px; font-weight:900; color:#fff; margin-top:5px; font-feature-settings:"tnum";}
-.plan-cl-amt small{font-size:10px; color:rgba(255,255,255,0.55); font-weight:700; margin-left:2px;}
-.plan-cl-bar{height:5px; background:rgba(255,255,255,0.12); margin-top:7px; position:relative; overflow:hidden;}
-.plan-cl-bar-fill{position:absolute; left:0; top:0; height:100%; background:var(--nhn-yellow); transition:width 400ms cubic-bezier(.32,.72,0,1);}
+.plan-cl-name{font-size:13px; font-weight:800; color:var(--ink); letter-spacing:-0.01em;}
+.plan-cl-pct{font-size:11px; font-weight:700; color:var(--ink-3); font-feature-settings:"tnum";}
+.plan-cl-pct.over{color:var(--nhn-red); font-weight:800;}
+.plan-cl-amt{font-size:15px; font-weight:800; color:var(--ink); margin-top:5px; font-feature-settings:"tnum"; letter-spacing:-0.01em;}
+.plan-cl-amt small{font-size:10px; color:var(--ink-4); font-weight:700; margin-left:2px;}
+.plan-cl-bar{height:5px; background:var(--surface-2); margin-top:7px; position:relative; overflow:hidden;}
+.plan-cl-bar-fill{position:absolute; left:0; top:0; height:100%; background:var(--ink); transition:width 400ms cubic-bezier(.32,.72,0,1);}
 .plan-cl-bar-fill.over{background:var(--nhn-red);}
-.plan-cl-note{font-size:10px; color:rgba(255,255,255,0.55); margin-top:6px; line-height:1.5;}
+.plan-cl-note{font-size:10px; color:var(--ink-4); margin-top:7px; line-height:1.5;}
 
 /* Budget card — 용돈 예산 */
 .budget-row{
@@ -533,7 +535,7 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
     <section class="plan-section" id="plan-section">
       <div class="plan-head">
         <div>
-          <div class="plan-eyebrow">✨ Monthly Budget · 매월 막주 실적 확인 ✨</div>
+          <div class="plan-eyebrow">Monthly Budget · 매월 막주 실적 확인</div>
           <h3 class="plan-title">2026년 <span id="plan-month">06월</span> 가계 예산</h3>
         </div>
         <div class="plan-total">
@@ -544,7 +546,7 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
       </div>
       <div class="plan-cards" id="plan-cards"></div>
       <div class="plan-cards-foot">
-        <div class="plan-foot-label">💳 카드별 실적 (당월)</div>
+        <div class="plan-foot-label">카드별 실적 (당월)</div>
         <div class="plan-card-grid" id="card-limits"></div>
       </div>
     </section>
