@@ -464,7 +464,7 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
         <table class="cat-table"><tbody id="cat-body"></tbody></table>
       </section>
       <section class="summary-section">
-        <div class="summary-head"><h3>본 &amp; 민성 (당월)</h3><span class="meta">결제수단 기준</span></div>
+        <div class="summary-head"><h3>구분별 (당월)</h3><span class="meta">생활비 · 본 · 민성</span></div>
         <table class="cat-table"><tbody id="bm-body"></tbody></table>
       </section>
     </div>
@@ -800,9 +800,11 @@ function txOwner(t){
 function txForScope(scope){
   return STATE.tx.filter(t => {
     if (!t.date.startsWith(currentMonth)) return false;
+    // 각 탭 독립 — 그 탭에서 입력한 거래만 표시
     if (scope === 'bon') return txOwner(t) === '본';
     if (scope === 'ms')  return txOwner(t) === '민성';
-    return true; // 생활비 = 전체
+    if (scope === 'all') return txOwner(t) === ''; // 생활비 탭 = 생활비로 입력한 것만
+    return true;
   });
 }
 function applyFilter(txs, f){
@@ -922,13 +924,13 @@ function renderSummary(){
       in:fs.filter(t=>t.io==='in').reduce((s,t)=>s+t.amt,0),
     };
   };
+  const liv = stat(t => txOwner(t) === ''); // 생활비
   const bon = stat(t => txOwner(t) === '본');
   const ms  = stat(t => txOwner(t) === '민성');
-  const sup = stat(t => txOwner(t) === ''); // 생활비/기타
   bmBody.innerHTML = `<tr><th>구분</th><th class="num">건수</th><th class="num">입금</th><th class="num">출금</th></tr>
+    <tr><td><b>생활비</b></td><td class="num">${liv.cnt}</td><td class="num" style="color:var(--nhn-blue);">${fmtMoney(liv.in)}</td><td class="num" style="color:var(--nhn-red);">${fmtMoney(liv.out)}</td></tr>
     <tr><td><b>본</b></td><td class="num">${bon.cnt}</td><td class="num" style="color:var(--nhn-blue);">${fmtMoney(bon.in)}</td><td class="num" style="color:var(--nhn-red);">${fmtMoney(bon.out)}</td></tr>
-    <tr><td><b>민성</b></td><td class="num">${ms.cnt}</td><td class="num" style="color:var(--nhn-blue);">${fmtMoney(ms.in)}</td><td class="num" style="color:var(--nhn-red);">${fmtMoney(ms.out)}</td></tr>
-    <tr><td>지원금/기타</td><td class="num">${sup.cnt}</td><td class="num" style="color:var(--nhn-blue);">${fmtMoney(sup.in)}</td><td class="num" style="color:var(--nhn-red);">${fmtMoney(sup.out)}</td></tr>`;
+    <tr><td><b>민성</b></td><td class="num">${ms.cnt}</td><td class="num" style="color:var(--nhn-blue);">${fmtMoney(ms.in)}</td><td class="num" style="color:var(--nhn-red);">${fmtMoney(ms.out)}</td></tr>`;
 
   // 카테고리 비중 (전체 합산)
   renderShare();
