@@ -292,6 +292,83 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
 }
 .cat-bar.out{background:var(--nhn-red);}
 
+/* ===== 월 가계 예산 (Plan) — 최상단 ===== */
+.plan-section{
+  background:
+    radial-gradient(ellipse at top left, rgba(252,246,131,0.45), transparent 60%),
+    linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  color:#fff;
+  padding:22px 24px;
+  border:3px solid var(--nhn-yellow);
+  margin-bottom:22px;
+  box-shadow:0 12px 30px rgba(0,0,0,0.12);
+}
+.plan-head{
+  display:grid; grid-template-columns:1fr auto; gap:20px; align-items:center;
+  margin-bottom:18px;
+}
+@media (max-width:680px){.plan-head{grid-template-columns:1fr;}}
+.plan-eyebrow{
+  font-size:11px; font-weight:800; letter-spacing:0.16em; color:var(--nhn-yellow);
+  margin-bottom:6px;
+}
+.plan-title{font-size:22px; font-weight:900; color:#fff; letter-spacing:-0.02em;}
+.plan-title span{color:var(--nhn-yellow);}
+.plan-total{min-width:280px;}
+.plan-total-num{font-size:14px; color:rgba(255,255,255,0.7); font-weight:600; margin-bottom:6px;}
+.plan-total-num b{color:#fff; font-size:24px; font-weight:900; font-feature-settings:"tnum"; margin-right:2px;}
+.plan-total-bar{height:10px; background:rgba(255,255,255,0.12); margin-bottom:6px; position:relative; overflow:hidden;}
+.plan-total-fill{position:absolute; left:0; top:0; height:100%; background:linear-gradient(90deg, var(--nhn-yellow), #FFD466); transition:width 400ms cubic-bezier(.32,.72,0,1);}
+.plan-total-fill.over{background:linear-gradient(90deg, var(--nhn-red), #FF7373);}
+.plan-total-meta{font-size:11px; color:rgba(255,255,255,0.65); font-weight:700;}
+.plan-total-meta span{color:#fff;}
+
+.plan-cards{
+  display:grid; grid-template-columns:repeat(5, 1fr); gap:8px;
+  margin-bottom:18px;
+}
+@media (max-width:1024px){.plan-cards{grid-template-columns:repeat(2, 1fr);}}
+@media (max-width:560px){.plan-cards{grid-template-columns:1fr;}}
+.plan-card{
+  background:rgba(255,255,255,0.06); padding:12px 14px;
+  border:1px solid rgba(255,255,255,0.1);
+}
+.plan-card-label{font-size:11px; font-weight:800; letter-spacing:0; color:rgba(255,255,255,0.65);}
+.plan-card-amt{font-size:18px; font-weight:900; color:#fff; margin-top:4px; font-feature-settings:"tnum";}
+.plan-card-amt small{font-size:11px; color:rgba(255,255,255,0.55); font-weight:700; margin-left:3px;}
+.plan-card-bar{height:5px; background:rgba(255,255,255,0.12); margin-top:8px; position:relative; overflow:hidden;}
+.plan-card-bar-fill{position:absolute; left:0; top:0; height:100%; background:var(--nhn-yellow); transition:width 400ms cubic-bezier(.32,.72,0,1);}
+.plan-card-bar-fill.over{background:var(--nhn-red);}
+.plan-card-meta{font-size:10px; color:rgba(255,255,255,0.55); margin-top:6px; line-height:1.5;}
+.plan-card-pct{font-size:11px; font-weight:800; color:var(--nhn-yellow); margin-top:3px;}
+.plan-card-pct.over{color:#FCA5A5;}
+
+.plan-cards-foot{
+  padding-top:16px; border-top:1px solid rgba(255,255,255,0.12);
+}
+.plan-foot-label{
+  font-size:11px; font-weight:800; letter-spacing:0.06em; color:rgba(255,255,255,0.65);
+  margin-bottom:10px;
+}
+.plan-card-grid{
+  display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;
+}
+@media (max-width:760px){.plan-card-grid{grid-template-columns:1fr;}}
+.plan-cl{
+  background:rgba(255,255,255,0.06); padding:12px 14px;
+  border:1px solid rgba(255,255,255,0.12);
+}
+.plan-cl-head{display:flex; align-items:baseline; justify-content:space-between; gap:8px;}
+.plan-cl-name{font-size:13px; font-weight:900; color:#fff;}
+.plan-cl-pct{font-size:11px; font-weight:800; color:var(--nhn-yellow);}
+.plan-cl-pct.over{color:#FCA5A5;}
+.plan-cl-amt{font-size:15px; font-weight:900; color:#fff; margin-top:5px; font-feature-settings:"tnum";}
+.plan-cl-amt small{font-size:10px; color:rgba(255,255,255,0.55); font-weight:700; margin-left:2px;}
+.plan-cl-bar{height:5px; background:rgba(255,255,255,0.12); margin-top:7px; position:relative; overflow:hidden;}
+.plan-cl-bar-fill{position:absolute; left:0; top:0; height:100%; background:var(--nhn-yellow); transition:width 400ms cubic-bezier(.32,.72,0,1);}
+.plan-cl-bar-fill.over{background:var(--nhn-red);}
+.plan-cl-note{font-size:10px; color:rgba(255,255,255,0.55); margin-top:6px; line-height:1.5;}
+
 /* Budget card — 용돈 예산 */
 .budget-row{
   display:grid; grid-template-columns:1fr 1fr; gap:1px;
@@ -452,6 +529,26 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
 <main>
   <!-- ============ 전체 요약 ============ -->
   <div class="tab-pane active" id="tab-summary">
+    <!-- 월 가계 예산 (200만) — 매월 막주 리마인드 -->
+    <section class="plan-section" id="plan-section">
+      <div class="plan-head">
+        <div>
+          <div class="plan-eyebrow">✨ Monthly Budget · 매월 막주 실적 확인 ✨</div>
+          <h3 class="plan-title">2026년 <span id="plan-month">06월</span> 가계 예산</h3>
+        </div>
+        <div class="plan-total">
+          <div class="plan-total-num"><b id="plan-used">0</b> / <span id="plan-cap">2,000,000</span>원</div>
+          <div class="plan-total-bar"><div class="plan-total-fill" id="plan-fill"></div></div>
+          <div class="plan-total-meta"><span id="plan-pct">0%</span> 사용 · <span id="plan-remain">2,000,000원</span> 잔여</div>
+        </div>
+      </div>
+      <div class="plan-cards" id="plan-cards"></div>
+      <div class="plan-cards-foot">
+        <div class="plan-foot-label">💳 카드별 실적 (당월)</div>
+        <div class="plan-card-grid" id="card-limits"></div>
+      </div>
+    </section>
+
     <div class="budget-row" id="sum-budget"></div>
     <div class="kpi-row">
       <div class="kpi"><div class="kpi-label">월 입금</div><div class="kpi-value in" id="sum-in">0원</div><div class="kpi-sub" id="sum-in-cnt">0건</div></div>
@@ -462,12 +559,12 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
 
     <div class="g2">
       <section class="summary-section">
-        <div class="summary-head"><h3>카테고리별 (당월)</h3><span class="meta" id="cat-meta">출금 기준</span></div>
-        <table class="cat-table"><tbody id="cat-body"></tbody></table>
-      </section>
-      <section class="summary-section">
         <div class="summary-head"><h3>구분별 (당월)</h3><span class="meta">생활비 · 본 · 민성</span></div>
         <table class="cat-table"><tbody id="bm-body"></tbody></table>
+      </section>
+      <section class="summary-section">
+        <div class="summary-head"><h3>카드별 (당월)</h3><span class="meta">결제수단별 출금 합계</span></div>
+        <table class="cat-table"><tbody id="pay-body"></tbody></table>
       </section>
     </div>
 
@@ -593,6 +690,23 @@ const STORAGE_KEY = 'budget-2026-data-v1';
 // 용돈 예산 (월별)
 const BUDGET = { bon: 300000, ms: 300000 };
 const ALLOWANCE_CAT = '용돈';
+
+/* === 월 가계 예산 (총 200만) === */
+const MONTHLY_TOTAL = 2000000;
+// 사용처별 예산
+const SPEND_PLAN = [
+  { id:'bon-allow',  label:'본 용돈',         amount:300000, owner:'본'   },
+  { id:'ms-allow',   label:'민성 용돈',        amount:300000, owner:'민성' },
+  { id:'living',     label:'생활비',           amount:500000, owner:''     },
+  { id:'fixed-sin',  label:'고정비 (신용카드)', amount:600000, note:'임대관리비 30 · 본 교통 20 · 고정 10' },
+  { id:'fixed-che',  label:'고정비 (체크카드)', amount:300000, note:'대출이자 20 · 민성 교통 10' },
+];
+// 카드별 월 한도 + 메모 (실적 트래킹)
+const CARD_LIMITS = [
+  { pay:'민삼신', limit:300000, note:'정수기 6년 · 민성용돈 30 + 정수기 2' },
+  { pay:'본삼신', limit:300000, note:'인터넷 2년 · 인터넷+관리비 25 + 장보기·고정 10' },
+  { pay:'본신신', limit:1000000, note:'임대 10 + 본용돈 30 + 본기름 20 + 생활비·외식 40' },
+];
 
 /* =========================================================
    State (Firestore 기반)
@@ -899,22 +1013,24 @@ function renderSummary(){
   balEl.className = 'kpi-value ' + (bal>=0?'bal-pos':'bal-neg');
   document.getElementById('sum-cnt').textContent = txs.length+'건';
 
-  // 카테고리별 (출금 기준)
+  // 카드별 (당월, 결제수단별 출금 합계)
   const outTxs = txs.filter(t=>t.io==='out');
-  const catMap = {};
-  outTxs.forEach(t => { catMap[t.cat] = (catMap[t.cat]||0) + t.amt; });
-  const catList = Object.entries(catMap).sort((a,b)=>b[1]-a[1]);
-  const max = catList[0] ? catList[0][1] : 1;
-  const catBody = document.getElementById('cat-body');
-  if (catList.length){
-    catBody.innerHTML = `<tr><th>카테고리</th><th class="num">건수</th><th class="num">금액</th></tr>` +
-      catList.map(([c,v]) => {
-        const cnt = outTxs.filter(t=>t.cat===c).length;
-        const pct = Math.round(v*100/max);
-        return `<tr><td><span class="cat-bar out" style="width:${pct}px;"></span>${escapeHtml(c)}</td><td class="num">${cnt}</td><td class="num">${fmtMoney(v)}</td></tr>`;
+  const payMap = {};
+  // 필터에 등록된 모든 결제수단을 0원으로 초기화 (표에 빈 행도 보이게)
+  STATE.filters.pay.forEach(p => { payMap[p] = 0; });
+  outTxs.forEach(t => { if (t.pay) payMap[t.pay] = (payMap[t.pay]||0) + t.amt; });
+  const payList = Object.entries(payMap).sort((a,b)=>b[1]-a[1]);
+  const maxPay = payList[0] ? Math.max(payList[0][1], 1) : 1;
+  const payBody = document.getElementById('pay-body');
+  if (payList.length){
+    payBody.innerHTML = `<tr><th>결제수단</th><th class="num">건수</th><th class="num">출금 합계</th></tr>` +
+      payList.map(([p,v]) => {
+        const cnt = outTxs.filter(t=>t.pay===p).length;
+        const pct = Math.round(v*100/maxPay);
+        return `<tr><td><span class="cat-bar out" style="width:${pct}px;"></span>${escapeHtml(p)}</td><td class="num">${cnt}</td><td class="num">${fmtMoney(v)}</td></tr>`;
       }).join('');
   } else {
-    catBody.innerHTML = '<tr><td colspan="3" style="color:var(--ink-5);text-align:center;padding:24px 0;">출금 내역이 없습니다.</td></tr>';
+    payBody.innerHTML = '<tr><td colspan="3" style="color:var(--ink-5);text-align:center;padding:24px 0;">등록된 결제수단이 없습니다.</td></tr>';
   }
 
   // 본 vs 민성 (결제수단 prefix 기반)
@@ -1080,9 +1196,67 @@ function renderBudgets(){
   document.getElementById('sum-budget').innerHTML = renderBudgetCard('bon') + renderBudgetCard('ms');
 }
 
+/* 월 가계 예산 (200만) 렌더 */
+function renderPlan(){
+  const monthLabel = currentMonth.slice(5) + '월';
+  document.getElementById('plan-month').textContent = monthLabel;
+
+  // 당월 출금 (전체) — 전체 진행률
+  const txs = STATE.tx.filter(t => t.date.startsWith(currentMonth) && t.io === 'out');
+  const totalUsed = txs.reduce((s,t)=>s+t.amt,0);
+  const totalPct = Math.min(100, Math.round(totalUsed*100/MONTHLY_TOTAL));
+  document.getElementById('plan-used').textContent = totalUsed.toLocaleString('ko-KR');
+  document.getElementById('plan-cap').textContent = MONTHLY_TOTAL.toLocaleString('ko-KR');
+  document.getElementById('plan-pct').textContent = totalPct + '%';
+  document.getElementById('plan-remain').textContent = Math.max(0, MONTHLY_TOTAL - totalUsed).toLocaleString('ko-KR') + '원';
+  const fill = document.getElementById('plan-fill');
+  fill.style.width = Math.min(100, totalUsed*100/MONTHLY_TOTAL) + '%';
+  fill.classList.toggle('over', totalUsed > MONTHLY_TOTAL);
+
+  // 사용처별 카드
+  function spendUsed(plan){
+    if (plan.id === 'bon-allow') return txs.filter(t => txOwner(t) === '본').reduce((s,t)=>s+t.amt,0);
+    if (plan.id === 'ms-allow')  return txs.filter(t => txOwner(t) === '민성').reduce((s,t)=>s+t.amt,0);
+    if (plan.id === 'living')    return txs.filter(t => txOwner(t) === '').reduce((s,t)=>s+t.amt,0);
+    // 고정비는 사용자 직접 추적 (현재는 카테고리 '집'/'교통비'로 매핑)
+    if (plan.id === 'fixed-sin') return txs.filter(t => t.pay === '본신신' && ['집','교통비'].includes(t.cat)).reduce((s,t)=>s+t.amt,0);
+    if (plan.id === 'fixed-che') return txs.filter(t => (t.pay === '본신체' || t.pay === '민신체') && ['집','교통비'].includes(t.cat)).reduce((s,t)=>s+t.amt,0);
+    return 0;
+  }
+  document.getElementById('plan-cards').innerHTML = SPEND_PLAN.map(p => {
+    const used = spendUsed(p);
+    const pct = Math.min(100, Math.round(used*100/p.amount));
+    const over = used > p.amount;
+    return `<div class="plan-card">
+      <div class="plan-card-label">${escapeHtml(p.label)}</div>
+      <div class="plan-card-amt">${used.toLocaleString('ko-KR')}<small>/ ${(p.amount/10000)}만</small></div>
+      <div class="plan-card-bar"><div class="plan-card-bar-fill ${over?'over':''}" style="width:${pct}%;"></div></div>
+      <div class="plan-card-pct ${over?'over':''}">${over ? '초과 '+Math.abs(p.amount-used).toLocaleString('ko-KR')+'원' : pct+'%'}</div>
+      ${p.note ? `<div class="plan-card-meta">${escapeHtml(p.note)}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  // 카드별 실적 (민삼신·본삼신·본신신)
+  document.getElementById('card-limits').innerHTML = CARD_LIMITS.map(c => {
+    const used = txs.filter(t => t.pay === c.pay).reduce((s,t)=>s+t.amt,0);
+    const pct = Math.min(100, Math.round(used*100/c.limit));
+    const over = used > c.limit;
+    return `<div class="plan-cl">
+      <div class="plan-cl-head">
+        <span class="plan-cl-name">${escapeHtml(c.pay)}</span>
+        <span class="plan-cl-pct ${over?'over':''}">${over ? '초과' : pct+'%'}</span>
+      </div>
+      <div class="plan-cl-amt">${used.toLocaleString('ko-KR')}<small>/ ${(c.limit/10000)}만</small></div>
+      <div class="plan-cl-bar"><div class="plan-cl-bar-fill ${over?'over':''}" style="width:${pct}%;"></div></div>
+      <div class="plan-cl-note">${escapeHtml(c.note)}</div>
+    </div>`;
+  }).join('');
+}
+
 function renderAll(){
   refreshInputCards();
   renderPills();
+  renderPlan();
   renderBudgets();
   renderFilterChips('all'); renderList('all');
   renderFilterChips('bon'); renderList('bon');
