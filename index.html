@@ -589,10 +589,10 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
 <nav class="main-tabs">
   <div class="main-tabs-inner">
     <button class="main-tab active" data-tab="summary" onclick="switchTab('summary',this)">전체 요약</button>
-    <button class="main-tab" data-tab="all" onclick="switchTab('all',this)">생활비</button>
+    <button class="main-tab" data-tab="all" onclick="switchTab('all',this)">생활비 <span class="pill" id="pill-all">0</span></button>
     <button class="main-tab" data-tab="bon" onclick="switchTab('bon',this)">본 <span class="pill" id="pill-bon">0</span></button>
     <button class="main-tab" data-tab="ms" onclick="switchTab('ms',this)">민성 <span class="pill" id="pill-ms">0</span></button>
-    <button class="main-tab" data-tab="assets" onclick="switchTab('assets',this)">자금 <span class="pill" id="pill-assets">0</span></button>
+    <button class="main-tab" data-tab="assets" onclick="switchTab('assets',this)">자금</button>
   </div>
 </nav>
 
@@ -1196,7 +1196,6 @@ function renderAssets(){
     }).join('')}
     </tbody></table>`;
   }
-  document.getElementById('pill-assets').textContent = list.length;
 }
 
 function renderAssetSummary(){
@@ -1460,6 +1459,7 @@ function renderShare(){
 
 /* Pills */
 function renderPills(){
+  document.getElementById('pill-all').textContent = txForScope('all').length;
   document.getElementById('pill-bon').textContent = txForScope('bon').length;
   document.getElementById('pill-ms').textContent  = txForScope('ms').length;
 }
