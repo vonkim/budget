@@ -6,6 +6,7 @@
 <title>본&민성 가계부 (2026)</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 
 <!-- Firebase SDK (Firestore 실시간 동기화) -->
 <script type="module">
@@ -129,6 +130,27 @@ input,select,textarea{outline:none;}
 .asset-grid tbody tr:last-child td{border-bottom:none;}
 .asset-grid tbody tr:hover{background:var(--surface-1);}
 .asset-grid tr.sum-row td{background:#f1f5f9; font-weight:800; color:var(--ink); border-top:2px solid var(--ink);}
+.asset-grid tr.sum-mid td{background:#eef1f4; font-weight:700; color:var(--ink-2); border-top:1px solid var(--ink-3);}
+.asset-grid tr.shade-a td{background:#e9f1fa;}
+.asset-grid tr.shade-b td{background:#eef5ee;}
+.asset-grid tr.shade-c td{background:#fdf2e9;}
+.asset-grid tr.sel-col-highlight td.col-active{box-shadow:inset 0 0 0 2px var(--nhn-blue);}
+.asset-grid td.col-active{background:#eaf3ff !important;}
+.asset-grid th.col-active{background:#dceaff !important; color:var(--nhn-blue);}
+
+/* 자산 월 칩 (KPI 기준 월 선택) */
+.asset-month-pick{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px;}
+.asset-month-pick .lbl{font-size:11px; font-weight:700; color:var(--ink-4); letter-spacing:0.08em; text-transform:uppercase; padding:7px 6px 7px 0;}
+.asset-month-chip{padding:6px 12px; font-size:12px; font-weight:600; color:var(--ink-4); background:var(--surface); border:1px solid var(--line-soft); cursor:pointer; letter-spacing:0;}
+.asset-month-chip:hover{color:var(--ink); border-color:var(--ink-4);}
+.asset-month-chip.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+/* 자산 추이 차트 카드 */
+.asset-chart-card{background:var(--surface); border:1px solid var(--ink); padding:18px 16px; margin-top:18px;}
+.asset-chart-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:10px;}
+.asset-chart-head h4{font-size:13px; font-weight:800; color:var(--ink); letter-spacing:-0.01em;}
+.asset-chart-head .meta{font-size:11px; color:var(--ink-4); font-weight:600;}
+.asset-chart-box{position:relative; height:300px;}
 .asset-grid .cell-input{width:100%; background:transparent; border:none; text-align:right; font-weight:600; font-feature-settings:"tnum"; padding:0; color:inherit; font-size:13px;}
 .asset-grid .cell-input:focus{outline:1px solid var(--nhn-blue); outline-offset:1px; background:#f0f8ff;}
 .asset-grid .row-del{font-size:10px; padding:3px 7px; color:var(--ink-5); border:1px solid transparent;}
@@ -708,11 +730,6 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
     </div>
 
     <section class="summary-section">
-      <div class="summary-head"><h3>자금 현황 (당월 말)</h3><span class="meta">예 · 적 · 투 · 청 비율 + 순자산</span></div>
-      <div id="asset-summary" class="share-wrap"></div>
-    </section>
-
-    <section class="summary-section">
       <div class="summary-head"><h3>카테고리 비중 (전체 합산)</h3><span class="meta">6~12월 출금 누계</span></div>
       <div class="share-wrap">
         <div class="share-bar" id="share-bar"></div>
@@ -794,9 +811,18 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
       <span class="meta-right">월초 잔액 기준 · 가로 스크롤 가능</span>
     </div>
 
+    <div class="asset-month-pick" id="asset-month-pick"></div>
     <div class="asset-top-kpis" id="asset-top-kpis"></div>
 
-    <div class="asset-grid-wrap">
+    <div class="asset-chart-card">
+      <div class="asset-chart-head">
+        <h4>자산 월별 추이 (카테고리 누적)</h4>
+        <span class="meta">단위: 원 · 막대 안 수치 + 상단 합계</span>
+      </div>
+      <div class="asset-chart-box"><canvas id="chart-asset-trend"></canvas></div>
+    </div>
+
+    <div class="asset-grid-wrap" style="margin-top:18px;">
       <table class="asset-grid" id="asset-grid"></table>
       <div class="asset-grid-toolbar">
         <button onclick="addAssetRow()">＋ 행 추가</button>
@@ -848,7 +874,7 @@ const SPEND_PLAN = [
 // 카드별 월 한도 + 메모 (실적 트래킹)
 const CARD_LIMITS = [
   { pay:'민삼신', limit:320000,  note:'민성용돈 30 + 정수기 2' },
-  { pay:'본삼신', limit:270000,  note:'관리비 20 + 통신비 7' },
+  { pay:'본삼신', limit:300000,  note:'관리비 20 + 통신비 7' },
   { pay:'본신신', limit:1000000, note:'본용돈 30 + 본기름 20 + 생활비·외식 50' },
 ];
 
@@ -1308,12 +1334,48 @@ function renderAssets(){
 }
 
 /* =========================================================
-   자산 (월별 잔액형) — 그리드 + 상단 KPI
+   자산 (월별 잔액형) — 그리드 + 상단 KPI + 추이 차트
 ========================================================= */
+// 현금형 카테고리 — 1차 소계에서 제외, 2차(최종) 합계에만 포함
+const CASH_ROWS = ['현금','현금+상품권'];
+// 음영 매핑: 행 이름 → CSS 클래스
+const ROW_SHADE = {
+  '정기예금':'shade-a',
+  '본적금+isa':'shade-b', '민적금+isa':'shade-b',
+  '현금':'shade-c', '현금+상품권':'shade-c',
+};
+// KPI 기준 월 (사용자 선택)
+let currentAssetMonth = null;
+
 function fmtMoney0(v){ return Math.round(v).toLocaleString('ko-KR'); }
 function getBal(month, row){ return (STATE.assetBalances.data?.[month]?.[row]) || 0; }
 function colSum(month){
   return STATE.assetBalances.rows.reduce((s,r)=>s+getBal(month,r),0);
+}
+function colSumNonCash(month){
+  return STATE.assetBalances.rows.filter(r => !CASH_ROWS.includes(r)).reduce((s,r)=>s+getBal(month,r),0);
+}
+function colSumCash(month){
+  return CASH_ROWS.reduce((s,r)=>s+getBal(month,r),0);
+}
+function ensureCurrentAssetMonth(){
+  const months = STATE.assetBalances.months;
+  if (currentAssetMonth && months.includes(currentAssetMonth)) return;
+  // 데이터가 있는 가장 최신 월, 없으면 마지막 월
+  const filled = months.filter(m => colSum(m) > 0);
+  currentAssetMonth = filled[filled.length-1] || months[months.length-1] || null;
+}
+function prevAssetMonth(){
+  const months = STATE.assetBalances.months;
+  const idx = months.indexOf(currentAssetMonth);
+  if (idx <= 0) return null;
+  return months[idx-1];
+}
+function selectAssetMonth(m){
+  currentAssetMonth = m;
+  renderAssetMonthPick();
+  renderAssetTopKpis();
+  renderAssetGrid(); // 컬럼 하이라이트
 }
 function setBal(month, row, val){
   STATE.assetBalances.data[month] = STATE.assetBalances.data[month] || {};
@@ -1326,13 +1388,13 @@ function addAssetRow(){
   if (!name) return;
   if (STATE.assetBalances.rows.includes(name)) return snack('이미 존재');
   STATE.assetBalances.rows.push(name);
-  saveState(); renderAssetGrid(); renderAssetTopKpis();
+  saveState(); renderAssetGrid(); renderAssetTopKpis(); renderAssetTrendChart(); renderAssetMonthPick();
 }
 function removeAssetRow(name){
   if (!confirm(`"${name}" 카테고리 삭제?`)) return;
   STATE.assetBalances.rows = STATE.assetBalances.rows.filter(r => r !== name);
   Object.keys(STATE.assetBalances.data || {}).forEach(m => { if (STATE.assetBalances.data[m]) delete STATE.assetBalances.data[m][name]; });
-  saveState(); renderAssetGrid(); renderAssetTopKpis();
+  saveState(); renderAssetGrid(); renderAssetTopKpis(); renderAssetTrendChart(); renderAssetMonthPick();
 }
 function addAssetMonth(){
   const last = STATE.assetBalances.months[STATE.assetBalances.months.length-1];
@@ -1342,70 +1404,203 @@ function addAssetMonth(){
   const next = `${ny}-${String(nm).padStart(2,'0')}`;
   if (STATE.assetBalances.months.includes(next)) return snack('이미 존재');
   STATE.assetBalances.months.push(next);
-  saveState(); renderAssetGrid(); renderAssetTopKpis();
+  saveState(); renderAssetGrid(); renderAssetTopKpis(); renderAssetTrendChart(); renderAssetMonthPick();
 }
 function onCellInput(input, month, row){
   const raw = input.value.replace(/[^\d]/g,'');
   setBal(month, row, raw ? parseInt(raw) : '');
-  // 합계 셀 즉시 갱신
-  const sum = colSum(month);
+  // 소계·합계 셀 즉시 갱신
+  const subCell = document.querySelector(`[data-submid-month="${month}"]`);
+  if (subCell) subCell.textContent = fmtMoney0(colSumNonCash(month));
   const sumCell = document.querySelector(`[data-sum-month="${month}"]`);
-  if (sumCell) sumCell.textContent = fmtMoney0(sum);
-  // KPI도 갱신
+  if (sumCell) sumCell.textContent = fmtMoney0(colSum(month));
   renderAssetTopKpis();
+  renderAssetTrendChart();
 }
 function onCellBlur(input, month, row){
   const v = getBal(month, row);
   input.value = v ? fmtMoney0(v) : '';
 }
+function renderAssetMonthPick(){
+  const el = document.getElementById('asset-month-pick');
+  if (!el) return;
+  const months = STATE.assetBalances.months;
+  el.innerHTML = '<span class="lbl">KPI 기준 월</span>' + months.map(m => {
+    const [y,mm] = m.split('-');
+    const active = m === currentAssetMonth;
+    return `<button class="asset-month-chip ${active?'active':''}" onclick="selectAssetMonth('${m}')">${y}.${mm}</button>`;
+  }).join('');
+}
+
 function renderAssetGrid(){
   const rows = STATE.assetBalances.rows;
   const months = STATE.assetBalances.months;
-  let html = '<thead><tr><th>구분</th>' + months.map(m => {
-    const [y, mm] = m.split('-');
-    return `<th>${y}.${mm}</th>`;
-  }).join('') + '<th style="width:50px;"></th></tr></thead><tbody>';
-  rows.forEach(r => {
-    html += `<tr><td><input class="name-input" value="${r}" disabled></td>`;
+  // 일반(비현금) 행 + 현금 행 분리
+  const nonCashRows = rows.filter(r => !CASH_ROWS.includes(r));
+  const cashRows = rows.filter(r => CASH_ROWS.includes(r));
+
+  let html = '<thead><tr><th>구분</th>';
+  months.forEach(m => {
+    const [y,mm] = m.split('-');
+    const active = m === currentAssetMonth ? 'col-active' : '';
+    html += `<th class="${active}">${y}.${mm}</th>`;
+  });
+  html += '<th style="width:50px;"></th></tr></thead><tbody>';
+
+  // 일반 행 렌더 함수
+  const renderRow = (r) => {
+    const shade = ROW_SHADE[r] || '';
+    let row = `<tr class="${shade}"><td><input class="name-input" value="${escapeHtml(r)}" disabled></td>`;
     months.forEach(m => {
       const v = getBal(m, r);
-      html += `<td><input class="cell-input" type="text" inputmode="numeric" value="${v?fmtMoney0(v):''}" placeholder="0"
+      const active = m === currentAssetMonth ? 'col-active' : '';
+      row += `<td class="${active}"><input class="cell-input" type="text" inputmode="numeric" value="${v?fmtMoney0(v):''}" placeholder="0"
         oninput="onCellInput(this,'${m}','${r.replace(/'/g,"\\'")}')"
         onblur="onCellBlur(this,'${m}','${r.replace(/'/g,"\\'")}')"
         onfocus="this.value=this.value.replace(/,/g,'')"></td>`;
     });
-    html += `<td><button class="row-del" onclick="removeAssetRow('${r.replace(/'/g,"\\'")}')">삭제</button></td></tr>`;
-  });
-  // 합계 행
-  html += `<tr class="sum-row"><td>합계</td>`;
+    row += `<td><button class="row-del" onclick="removeAssetRow('${r.replace(/'/g,"\\'")}')">삭제</button></td></tr>`;
+    return row;
+  };
+
+  nonCashRows.forEach(r => html += renderRow(r));
+
+  // 1차 소계 (현금 제외)
+  html += `<tr class="sum-mid"><td>소계 (현금 제외)</td>`;
   months.forEach(m => {
-    html += `<td data-sum-month="${m}">${fmtMoney0(colSum(m))}</td>`;
+    const active = m === currentAssetMonth ? 'col-active' : '';
+    html += `<td class="${active}" data-submid-month="${m}">${fmtMoney0(colSumNonCash(m))}</td>`;
+  });
+  html += `<td></td></tr>`;
+
+  // 현금 행
+  cashRows.forEach(r => html += renderRow(r));
+
+  // 최종 합계
+  html += `<tr class="sum-row"><td>최종 합계</td>`;
+  months.forEach(m => {
+    const active = m === currentAssetMonth ? 'col-active' : '';
+    html += `<td class="${active}" data-sum-month="${m}">${fmtMoney0(colSum(m))}</td>`;
   });
   html += `<td></td></tr></tbody>`;
+
   document.getElementById('asset-grid').innerHTML = html;
 }
+
 function renderAssetTopKpis(){
+  ensureCurrentAssetMonth();
   const months = STATE.assetBalances.months;
-  if (!months.length) return;
-  // 가장 최신 데이터 있는 월 + 직전 월
-  const filled = months.filter(m => colSum(m) > 0);
-  const cur = filled[filled.length-1] || months[months.length-1];
-  const prev = filled[filled.length-2] || null;
+  if (!months.length || !currentAssetMonth) return;
+  const cur = currentAssetMonth;
+  const prev = prevAssetMonth();
   const curSum = colSum(cur);
   const prevSum = prev ? colSum(prev) : 0;
   const delta = curSum - prevSum;
-  // 카테고리 최대치
-  const rows = STATE.assetBalances.rows;
-  let top = {name:'-', val:0};
-  rows.forEach(r => { const v = getBal(cur, r); if (v > top.val) top = {name:r, val:v}; });
+  const deltaPct = prevSum ? (delta*100/prevSum) : 0;
+
+  // 그룹별 비중
+  const groupVal = {
+    '예금/적금': STATE.assetBalances.rows.filter(r => ROW_SHADE[r]==='shade-a' || ROW_SHADE[r]==='shade-b').reduce((s,r)=>s+getBal(cur,r),0),
+    '투자/계좌': STATE.assetBalances.rows.filter(r => !ROW_SHADE[r] && !CASH_ROWS.includes(r)).reduce((s,r)=>s+getBal(cur,r),0),
+    '현금':     colSumCash(cur),
+  };
+  const pct = (v) => curSum ? (v*100/curSum) : 0;
+
   const [y,m] = cur.split('-');
-  const prevLbl = prev ? `vs ${prev.split('-')[0]}.${prev.split('-')[1]}` : '직전 월 없음';
+  const prevLbl = prev ? `${prev.split('-')[0]}.${prev.split('-')[1]} 대비` : '직전 월 없음';
+
   document.getElementById('asset-top-kpis').innerHTML = `
-    <div class="atk"><div class="atk-label">총 자산 (${y}.${m})</div><div class="atk-value">${fmtMoney0(curSum)}<small style="font-size:11px; color:var(--ink-4); margin-left:3px;">원</small></div><div class="atk-sub">${rows.length}개 카테고리</div></div>
-    <div class="atk"><div class="atk-label">전월 대비</div><div class="atk-value ${delta>=0?'delta-pos':'delta-neg'}">${delta>=0?'+':'−'}${fmtMoney0(Math.abs(delta))}</div><div class="atk-sub">${prevLbl}</div></div>
-    <div class="atk"><div class="atk-label">최대 카테고리</div><div class="atk-value">${escapeHtml(top.name)}</div><div class="atk-sub">${fmtMoney0(top.val)}원</div></div>
-    <div class="atk"><div class="atk-label">월 추적 범위</div><div class="atk-value">${months.length}개월</div><div class="atk-sub">${months[0]} ~ ${months[months.length-1]}</div></div>
+    <div class="atk">
+      <div class="atk-label">총 자산 (${y}.${m})</div>
+      <div class="atk-value">${fmtMoney0(curSum)}<small style="font-size:11px; color:var(--ink-4); margin-left:3px;">원</small></div>
+      <div class="atk-sub">소계 ${fmtMoney0(colSumNonCash(cur))} · 현금 ${fmtMoney0(colSumCash(cur))}</div>
+    </div>
+    <div class="atk">
+      <div class="atk-label">${prevLbl}</div>
+      <div class="atk-value ${delta>=0?'delta-pos':'delta-neg'}">${delta>=0?'+':'−'}${fmtMoney0(Math.abs(delta))}</div>
+      <div class="atk-sub">${prevSum ? (delta>=0?'+':'')+deltaPct.toFixed(1)+'%' : '비교 없음'}</div>
+    </div>
+    <div class="atk">
+      <div class="atk-label">예금·적금 비중</div>
+      <div class="atk-value">${pct(groupVal['예금/적금']).toFixed(1)}<small style="font-size:11px; color:var(--ink-4); margin-left:1px;">%</small></div>
+      <div class="atk-sub">${fmtMoney0(groupVal['예금/적금'])}원</div>
+    </div>
+    <div class="atk">
+      <div class="atk-label">현금 비중</div>
+      <div class="atk-value">${pct(groupVal['현금']).toFixed(1)}<small style="font-size:11px; color:var(--ink-4); margin-left:1px;">%</small></div>
+      <div class="atk-sub">투자·계좌 ${pct(groupVal['투자/계좌']).toFixed(1)}%</div>
+    </div>
   `;
+}
+
+/* 자산 월별 추이 — 스택 막대 */
+let chartAssetTrend = null;
+function renderAssetTrendChart(){
+  const months = STATE.assetBalances.months;
+  const rows = STATE.assetBalances.rows;
+  const palette = ['#0F80F6','#01A058','#7c2d12','#0891b2','#FF9000','#a855f7','#EB453D','#94a3b8','#fbbf24','#14b8a6'];
+  const datasets = rows.map((r,i) => ({
+    label: r,
+    data: months.map(m => getBal(m, r)),
+    backgroundColor: palette[i % palette.length],
+    stack: 's',
+    borderWidth: 0,
+    datalabels: {
+      color: '#fff',
+      font: {family:'Pretendard', size:10, weight:'700'},
+      formatter: (v) => v > 3000000 ? (v/10000).toLocaleString('ko-KR')+'만' : '',
+      anchor: 'center', align: 'center',
+    }
+  }));
+
+  // 합계 라벨용 plugin
+  const totalLabelPlugin = {
+    id:'assetTotalLabel',
+    afterDatasetsDraw(chart){
+      const ctx = chart.ctx;
+      const meta0 = chart.getDatasetMeta(0);
+      if (!meta0.data || !meta0.data.length) return;
+      const topMeta = chart.getDatasetMeta(rows.length - 1);
+      ctx.save();
+      ctx.font = 'bold 12px Pretendard';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.fillStyle = '#191919';
+      meta0.data.forEach((bar, i) => {
+        const total = colSum(months[i]);
+        if (total <= 0) return;
+        const topY = topMeta.data[i]?.y ?? bar.y;
+        ctx.fillText((total/10000).toLocaleString('ko-KR')+'만', bar.x, topY - 6);
+      });
+      ctx.restore();
+    }
+  };
+
+  const ctx = document.getElementById('chart-asset-trend');
+  if (!ctx) return;
+  if (chartAssetTrend) chartAssetTrend.destroy();
+  chartAssetTrend = new Chart(ctx, {
+    type: 'bar',
+    plugins: [ChartDataLabels, totalLabelPlugin],
+    data: {
+      labels: months.map(m => { const [y,mm]=m.split('-'); return y+'.'+mm; }),
+      datasets,
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      layout:{padding:{top:24, right:8, bottom:4, left:4}},
+      plugins: {
+        legend: { position:'bottom', labels:{font:{family:'Pretendard',size:11,weight:'600'}, color:'#545454', boxWidth:12, padding:10}},
+        tooltip: { callbacks:{label: c => c.dataset.label+': '+fmtMoney0(c.parsed.y)+'원'}},
+      },
+      scales: {
+        x: { stacked:true, ticks:{font:{family:'Pretendard',size:11}, color:'#545454'}, grid:{display:false}},
+        y: { stacked:true, beginAtZero:true,
+             ticks:{font:{family:'Pretendard',size:11}, color:'#545454', callback:v=>(v/10000000).toFixed(0)+'천만'},
+             grid:{color:'#ededed'}},
+      },
+    },
+  });
 }
 
 /* 전체요약 탭에서 보여주는 자금 현황 — 새 잔액 기반 */
@@ -1797,7 +1992,7 @@ function drawCharts(){
       {label:'출금', data:outArr, backgroundColor:'rgba(235,69,61,0.85)', borderRadius:2},
     ]},
     options:{responsive:true, maintainAspectRatio:false,
-      plugins:{legend:{position:'bottom', labels:{font:{family:'Pretendard', size:11}, color:'#545454'}}},
+      plugins:{legend:{position:'bottom', labels:{font:{family:'Pretendard', size:11}, color:'#545454'}}, datalabels:{display:false}},
       scales:{
         x:{ticks:{font:{family:'Pretendard', size:11}, color:'#545454'}, grid:{display:false}},
         y:{ticks:{font:{family:'Pretendard', size:11}, color:'#545454', callback:v=>(v/10000).toLocaleString()+'만'}, grid:{color:'#ededed'}, beginAtZero:true},
@@ -1824,7 +2019,7 @@ function drawCharts(){
     type:'line',
     data:{labels, datasets:ds.length?ds:[{label:'데이터 없음',data:[0,0,0,0,0,0,0],borderColor:'#a1a1a1'}]},
     options:{responsive:true, maintainAspectRatio:false,
-      plugins:{legend:{position:'bottom', labels:{font:{family:'Pretendard', size:11}, color:'#545454', boxWidth:12}}},
+      plugins:{legend:{position:'bottom', labels:{font:{family:'Pretendard', size:11}, color:'#545454', boxWidth:12}}, datalabels:{display:false}},
       scales:{
         x:{ticks:{font:{family:'Pretendard', size:11}, color:'#545454'}, grid:{display:false}},
         y:{ticks:{font:{family:'Pretendard', size:11}, color:'#545454', callback:v=>(v/10000).toLocaleString()+'만'}, grid:{color:'#ededed'}, beginAtZero:true},
@@ -1945,8 +2140,11 @@ function renderAll(){
   ensureAssetBalances();
   // 특수 탭이면 그쪽만, 아니면 전체
   if (currentMonth === '__assets__') {
-    renderAssetGrid();
+    ensureCurrentAssetMonth();
+    renderAssetMonthPick();
     renderAssetTopKpis();
+    renderAssetTrendChart();
+    renderAssetGrid();
     return;
   }
   if (currentMonth === '__plan__') {
@@ -1961,8 +2159,6 @@ function renderAll(){
   renderFilterChips('bon'); renderList('bon');
   renderFilterChips('ms');  renderList('ms');
   renderSummary();
-  // 전체요약 자금 위젯 — 자산 잔액 기반으로 변경
-  renderAssetSummaryFromBalances();
 }
 
 /* =========================================================
