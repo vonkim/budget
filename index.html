@@ -93,6 +93,76 @@ input,select,textarea{outline:none;}
 .month-btn:hover{color:var(--ink);}
 .month-btn.active{color:var(--nhn-blue); border-bottom-color:var(--nhn-blue);}
 .month-btn small{display:block; font-size:9px; font-weight:600; letter-spacing:0.04em; margin-top:2px; opacity:0.7;}
+.month-btn[data-m="__assets__"], .month-btn[data-m="__plan__"]{color:var(--ink-2);}
+.month-btn[data-m="__assets__"].active, .month-btn[data-m="__plan__"].active{color:var(--nhn-blue);}
+.month-sep{display:inline-block; width:1px; background:var(--line-soft); margin:8px 12px; flex:0 0 auto;}
+
+/* ===== 자산 / PLAN 뷰 ===== */
+.special-head{
+  display:flex; align-items:baseline; gap:14px; margin-bottom:14px;
+  padding-bottom:12px; border-bottom:2px solid var(--ink);
+}
+.special-head h2{font-size:22px; font-weight:800; letter-spacing:-0.02em; color:var(--ink);}
+.special-head .meta{font-size:11px; color:var(--ink-4); font-weight:700; letter-spacing:0.08em; text-transform:uppercase;}
+.special-head .meta-right{margin-left:auto; font-size:11px; color:var(--ink-4); font-weight:600;}
+
+/* KPI top row for 자산 (두괄식) */
+.asset-top-kpis{
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:1px;
+  background:var(--line-soft); border:1px solid var(--ink); margin-bottom:24px;
+}
+@media (max-width:760px){.asset-top-kpis{grid-template-columns:repeat(2, 1fr);}}
+.atk{background:var(--surface); padding:18px 20px;}
+.atk-label{font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-4); margin-bottom:6px;}
+.atk-value{font-size:22px; font-weight:800; color:var(--ink); letter-spacing:-0.02em; font-feature-settings:"tnum";}
+.atk-value.delta-pos{color:var(--nhn-blue);}
+.atk-value.delta-neg{color:var(--nhn-red);}
+.atk-sub{font-size:11px; color:var(--ink-5); margin-top:3px;}
+
+/* 자산 월별 잔액 표 (엑셀형) */
+.asset-grid-wrap{border:1px solid var(--ink); margin-top:18px; overflow-x:auto; background:var(--surface);}
+.asset-grid{width:100%; border-collapse:collapse; font-size:13px; white-space:nowrap; min-width:780px;}
+.asset-grid thead th{background:var(--surface-2); color:var(--ink); font-size:11px; font-weight:700; text-align:right; padding:9px 12px; border-bottom:1px solid var(--ink); letter-spacing:0;}
+.asset-grid thead th:first-child{text-align:left;}
+.asset-grid tbody td{padding:8px 12px; border-bottom:1px solid var(--line-softer); text-align:right; font-feature-settings:"tnum"; font-weight:600; color:var(--ink-2);}
+.asset-grid tbody td:first-child{text-align:left; font-weight:600; color:var(--ink);}
+.asset-grid tbody tr:last-child td{border-bottom:none;}
+.asset-grid tbody tr:hover{background:var(--surface-1);}
+.asset-grid tr.sum-row td{background:#f1f5f9; font-weight:800; color:var(--ink); border-top:2px solid var(--ink);}
+.asset-grid .cell-input{width:100%; background:transparent; border:none; text-align:right; font-weight:600; font-feature-settings:"tnum"; padding:0; color:inherit; font-size:13px;}
+.asset-grid .cell-input:focus{outline:1px solid var(--nhn-blue); outline-offset:1px; background:#f0f8ff;}
+.asset-grid .row-del{font-size:10px; padding:3px 7px; color:var(--ink-5); border:1px solid transparent;}
+.asset-grid .row-del:hover{color:var(--nhn-red); border-color:var(--nhn-red);}
+.asset-grid .name-input{width:100%; background:transparent; border:none; font-weight:600; color:inherit; padding:0; font-size:13px;}
+.asset-grid .name-input:focus{outline:1px solid var(--nhn-blue);}
+
+.asset-grid-toolbar{display:flex; gap:8px; padding:12px 14px; border-top:1px solid var(--line-soft); background:var(--surface-1);}
+.asset-grid-toolbar button{padding:7px 12px; font-size:11px; font-weight:700; color:var(--ink); background:var(--surface); border:1px solid var(--ink); letter-spacing:0;}
+.asset-grid-toolbar button:hover{background:var(--ink); color:#fff;}
+
+/* PLAN 카드 그리드 */
+.plan-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:18px; margin-top:18px;}
+@media (max-width:900px){.plan-grid{grid-template-columns:1fr;}}
+.plan-block{background:var(--surface); border:1px solid var(--line-soft); padding:18px 20px;}
+.plan-block-head{display:flex; align-items:baseline; gap:10px; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--line-soft);}
+.plan-block-head h4{font-size:14px; font-weight:800; color:var(--ink); letter-spacing:-0.01em;}
+.plan-block-head .badge{font-size:10px; font-weight:700; color:var(--ink-4); background:var(--surface-2); padding:2px 8px;}
+.plan-row{display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px dashed var(--line-softer); font-size:13px;}
+.plan-row:last-child{border-bottom:none;}
+.plan-row .lbl{color:var(--ink-3); font-weight:500;}
+.plan-row .val{color:var(--ink); font-weight:700; font-feature-settings:"tnum";}
+.plan-row .val.pos{color:var(--nhn-blue);}
+.plan-row .val.neg{color:var(--nhn-red);}
+.plan-row .val small{color:var(--ink-4); font-weight:500; margin-left:4px;}
+.plan-note{font-size:11px; color:var(--ink-4); padding:8px 10px; background:var(--surface-1); margin-top:10px; line-height:1.5;}
+
+.plan-table{width:100%; border-collapse:collapse; font-size:12.5px; margin-top:8px;}
+.plan-table th, .plan-table td{padding:8px 10px; text-align:right; border-bottom:1px solid var(--line-softer); font-feature-settings:"tnum";}
+.plan-table th{background:var(--surface-2); color:var(--ink); font-size:10.5px; font-weight:700; letter-spacing:0;}
+.plan-table th:first-child, .plan-table td:first-child{text-align:left;}
+.plan-table tr.sum td{background:#f1f5f9; font-weight:800; color:var(--ink); border-top:1.5px solid var(--ink);}
+.plan-table td.pos{color:var(--nhn-blue);}
+.plan-table td.neg{color:var(--nhn-red);}
 
 /* ===== Main Tabs ===== */
 .main-tabs{
@@ -592,7 +662,6 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
     <button class="main-tab" data-tab="all" onclick="switchTab('all',this)">생활비 <span class="pill" id="pill-all">0</span></button>
     <button class="main-tab" data-tab="bon" onclick="switchTab('bon',this)">본 <span class="pill" id="pill-bon">0</span></button>
     <button class="main-tab" data-tab="ms" onclick="switchTab('ms',this)">민성 <span class="pill" id="pill-ms">0</span></button>
-    <button class="main-tab" data-tab="assets" onclick="switchTab('assets',this)">자금</button>
   </div>
 </nav>
 
@@ -717,31 +786,32 @@ main{max-width:var(--max); margin:0 auto; padding:24px var(--pad-x) 96px;}
     <div id="list-ms"></div>
   </div>
 
-  <!-- ============ 자금 ============ -->
-  <div class="tab-pane" id="tab-assets">
-    <div id="asset-cards"></div>
-
-    <div class="input-card">
-      <div class="input-card-head">
-        <div class="input-card-title">자금 변동 추가</div>
-        <div class="input-card-sub">잔액 / 증가 / 감소 선택해서 입력. 자산 종류는 셀렉트 마지막의 "기타"로 직접 추가 가능</div>
-      </div>
-      <div class="input-grid" data-scope="assets">
-        <select class="fld f-action">
-          <option value="잔액">잔액 (현재 잔액 설정)</option>
-          <option value="증가">증가 (+)</option>
-          <option value="감소">감소 (−)</option>
-        </select>
-        <div class="date-picker"><button class="date-pick-btn" onclick="openCal(this)"><span class="date-pick-label placeholder">날짜 선택</span><span class="date-pick-arrow">▼</span></button><div class="cal-pop"></div></div>
-        <select class="fld f-asset-type"></select>
-        <input class="fld amount" type="text" inputmode="numeric" placeholder="금액" oninput="formatAmount(this)">
-        <input class="fld f-return" type="text" inputmode="decimal" placeholder="수익률% (투자만)" style="max-width:130px;">
-        <input class="fld memo" type="text" placeholder="사용처 / 메모">
-        <button class="btn-add" onclick="addAsset(this)">추가</button>
-      </div>
+  <!-- ============ 자산 (월별 잔액 입력형) ============ -->
+  <div class="tab-pane" id="tab-asset-view">
+    <div class="special-head">
+      <h2>자산 현황</h2>
+      <span class="meta">Monthly Balance Sheet</span>
+      <span class="meta-right">월초 잔액 기준 · 가로 스크롤 가능</span>
     </div>
 
-    <div id="asset-list"></div>
+    <div class="asset-top-kpis" id="asset-top-kpis"></div>
+
+    <div class="asset-grid-wrap">
+      <table class="asset-grid" id="asset-grid"></table>
+      <div class="asset-grid-toolbar">
+        <button onclick="addAssetRow()">＋ 행 추가</button>
+        <button onclick="addAssetMonth()">＋ 다음 월 추가</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PLAN (참고용) ============ -->
+  <div class="tab-pane" id="tab-plan-view">
+    <div class="special-head">
+      <h2>PLAN 참고</h2>
+      <span class="meta">언제든 참고 가능한 예산·자금 계획</span>
+    </div>
+    <div id="plan-view-body"></div>
   </div>
 </main>
 
@@ -767,27 +837,42 @@ const STORAGE_KEY = 'budget-2026-data-v1';
 const BUDGET = { bon: 300000, ms: 300000, liv: 500000 };
 const ALLOWANCE_CAT = '용돈';
 
-/* === 월 가계 예산 (총 200만) === */
-const MONTHLY_TOTAL = 2000000;
+/* === 월 가계 예산 (총 110만) === */
+const MONTHLY_TOTAL = 1100000;
 // 사용처별 예산
 const SPEND_PLAN = [
-  { id:'bon-allow',  label:'본 용돈',         amount:300000, owner:'본',   color:'green' },
-  { id:'ms-allow',   label:'민성 용돈',        amount:300000, owner:'민성', color:'pink'  },
-  { id:'living',     label:'생활비',           amount:500000, owner:'',     color:'blue'  },
-  { id:'fixed-sin',  label:'고정비 (신용카드)', amount:600000, note:'임대관리비 30 · 본 교통 20 · 고정 10' },
-  { id:'fixed-che',  label:'고정비 (체크카드)', amount:300000, note:'대출이자 20 · 민성 교통 10' },
+  { id:'bon-allow',  label:'본 용돈',  amount:300000, owner:'본',   color:'green' },
+  { id:'ms-allow',   label:'민성 용돈', amount:300000, owner:'민성', color:'pink'  },
+  { id:'living',     label:'생활비',    amount:500000, owner:'',     color:'blue'  },
 ];
 // 카드별 월 한도 + 메모 (실적 트래킹)
 const CARD_LIMITS = [
-  { pay:'민삼신', limit:300000, note:'정수기 6년 · 민성용돈 30 + 정수기 2' },
-  { pay:'본삼신', limit:300000, note:'인터넷 2년 · 인터넷+관리비 25 + 장보기·고정 10' },
-  { pay:'본신신', limit:1000000, note:'임대 10 + 본용돈 30 + 본기름 20 + 생활비·외식 40' },
+  { pay:'민삼신', limit:320000,  note:'민성용돈 30 + 정수기 2' },
+  { pay:'본삼신', limit:270000,  note:'관리비 20 + 통신비 7' },
+  { pay:'본신신', limit:1000000, note:'본용돈 30 + 본기름 20 + 생활비·외식 50' },
 ];
 
 /* =========================================================
    State (Firestore 기반)
 ========================================================= */
-let STATE = { tx:[], filters: JSON.parse(JSON.stringify(DEFAULT_FILTERS)), assets:[] };
+let STATE = { tx:[], filters: JSON.parse(JSON.stringify(DEFAULT_FILTERS)), assets:[], assetBalances:{} };
+// 자산 월별 잔액 — 카테고리/월(YYYY-MM)별 금액
+const DEFAULT_ASSET_ROWS = ['정기예금','본적금+isa','민적금+isa','계좌','코인주식','현금','현금+상품권'];
+const DEFAULT_ASSET_MONTHS = ['2026-05','2026-06','2026-07','2026-08'];
+function ensureAssetBalances(){
+  if (!STATE.assetBalances || typeof STATE.assetBalances !== 'object') STATE.assetBalances = {};
+  if (!STATE.assetBalances.rows) STATE.assetBalances.rows = DEFAULT_ASSET_ROWS.slice();
+  if (!STATE.assetBalances.months) STATE.assetBalances.months = DEFAULT_ASSET_MONTHS.slice();
+  if (!STATE.assetBalances.data) {
+    // 사용자가 준 시드값 (2026-05)
+    STATE.assetBalances.data = {
+      '2026-05': {'정기예금':100000000,'본적금+isa':43000000,'민적금+isa':27000000,'계좌':60000000,'코인주식':6000000,'현금':30000000,'현금+상품권':1500000},
+      '2026-06': {'정기예금':100000000,'본적금+isa':45450000,'민적금+isa':29100000},
+      '2026-07': {'정기예금':100000000,'본적금+isa':47900000,'민적금+isa':31200000},
+      '2026-08': {'정기예금':100000000},
+    };
+  }
+}
 let currentMonth = MONTHS[0];
 let currentTab = 'summary';
 let filterState = { all:{cat:'all',pay:'all',io:'all'}, bon:{cat:'all',pay:'all',io:'all'}, ms:{cat:'all',pay:'all',io:'all'} };
@@ -803,7 +888,7 @@ function saveState(){
   // 디바운스 — 짧은 시간 안 여러번 호출 시 마지막 한 번만
   clearTimeout(_saveTimer);
   _saveTimer = setTimeout(async () => {
-    const payload = { tx: STATE.tx, filters: STATE.filters, assets: STATE.assets };
+    const payload = { tx: STATE.tx, filters: STATE.filters, assets: STATE.assets, assetBalances: STATE.assetBalances };
     const json = JSON.stringify(payload);
     if (json === _lastSavedJson) return; // 변경 없으면 skip
     _lastSavedJson = json;
@@ -823,18 +908,42 @@ function saveState(){
 ========================================================= */
 function renderMonthBar(){
   const el = document.getElementById('month-bar');
-  el.innerHTML = MONTHS.map(m => {
+  const special = `
+    <button class="month-btn ${currentMonth==='__assets__'?'active':''}" data-m="__assets__" onclick="switchMonth('__assets__',this)">
+      자산<small>BALANCE</small>
+    </button>
+    <button class="month-btn ${currentMonth==='__plan__'?'active':''}" data-m="__plan__" onclick="switchMonth('__plan__',this)">
+      PLAN<small>참고</small>
+    </button>
+    <span class="month-sep"></span>
+  `;
+  const months = MONTHS.map(m => {
     const [y, mm] = m.split('-');
     return `<button class="month-btn ${m===currentMonth?'active':''}" data-m="${m}" onclick="switchMonth('${m}',this)">
       ${mm}월<small>${y}</small>
     </button>`;
   }).join('');
+  el.innerHTML = special + months;
 }
 
 function switchMonth(m, btn){
   currentMonth = m;
   document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
+
+  const isSpecial = (m === '__assets__' || m === '__plan__');
+  const mainTabsEl = document.querySelector('.main-tabs');
+  if (mainTabsEl) mainTabsEl.style.display = isSpecial ? 'none' : '';
+
+  // 특수 탭이면 해당 패널만, 일반 월이면 현재 메인탭 패널 활성화
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  if (m === '__assets__') {
+    document.getElementById('tab-asset-view').classList.add('active');
+  } else if (m === '__plan__') {
+    document.getElementById('tab-plan-view').classList.add('active');
+  } else {
+    document.getElementById('tab-' + currentTab).classList.add('active');
+  }
   renderAll();
 }
 
@@ -1196,6 +1305,212 @@ function renderAssets(){
     }).join('')}
     </tbody></table>`;
   }
+}
+
+/* =========================================================
+   자산 (월별 잔액형) — 그리드 + 상단 KPI
+========================================================= */
+function fmtMoney0(v){ return Math.round(v).toLocaleString('ko-KR'); }
+function getBal(month, row){ return (STATE.assetBalances.data?.[month]?.[row]) || 0; }
+function colSum(month){
+  return STATE.assetBalances.rows.reduce((s,r)=>s+getBal(month,r),0);
+}
+function setBal(month, row, val){
+  STATE.assetBalances.data[month] = STATE.assetBalances.data[month] || {};
+  if (val === '' || val == null) delete STATE.assetBalances.data[month][row];
+  else STATE.assetBalances.data[month][row] = +val || 0;
+  saveState();
+}
+function addAssetRow(){
+  const name = prompt('새 카테고리명');
+  if (!name) return;
+  if (STATE.assetBalances.rows.includes(name)) return snack('이미 존재');
+  STATE.assetBalances.rows.push(name);
+  saveState(); renderAssetGrid(); renderAssetTopKpis();
+}
+function removeAssetRow(name){
+  if (!confirm(`"${name}" 카테고리 삭제?`)) return;
+  STATE.assetBalances.rows = STATE.assetBalances.rows.filter(r => r !== name);
+  Object.keys(STATE.assetBalances.data || {}).forEach(m => { if (STATE.assetBalances.data[m]) delete STATE.assetBalances.data[m][name]; });
+  saveState(); renderAssetGrid(); renderAssetTopKpis();
+}
+function addAssetMonth(){
+  const last = STATE.assetBalances.months[STATE.assetBalances.months.length-1];
+  const [y,m] = last.split('-').map(Number);
+  const ny = m === 12 ? y+1 : y;
+  const nm = m === 12 ? 1 : m+1;
+  const next = `${ny}-${String(nm).padStart(2,'0')}`;
+  if (STATE.assetBalances.months.includes(next)) return snack('이미 존재');
+  STATE.assetBalances.months.push(next);
+  saveState(); renderAssetGrid(); renderAssetTopKpis();
+}
+function onCellInput(input, month, row){
+  const raw = input.value.replace(/[^\d]/g,'');
+  setBal(month, row, raw ? parseInt(raw) : '');
+  // 합계 셀 즉시 갱신
+  const sum = colSum(month);
+  const sumCell = document.querySelector(`[data-sum-month="${month}"]`);
+  if (sumCell) sumCell.textContent = fmtMoney0(sum);
+  // KPI도 갱신
+  renderAssetTopKpis();
+}
+function onCellBlur(input, month, row){
+  const v = getBal(month, row);
+  input.value = v ? fmtMoney0(v) : '';
+}
+function renderAssetGrid(){
+  const rows = STATE.assetBalances.rows;
+  const months = STATE.assetBalances.months;
+  let html = '<thead><tr><th>구분</th>' + months.map(m => {
+    const [y, mm] = m.split('-');
+    return `<th>${y}.${mm}</th>`;
+  }).join('') + '<th style="width:50px;"></th></tr></thead><tbody>';
+  rows.forEach(r => {
+    html += `<tr><td><input class="name-input" value="${r}" disabled></td>`;
+    months.forEach(m => {
+      const v = getBal(m, r);
+      html += `<td><input class="cell-input" type="text" inputmode="numeric" value="${v?fmtMoney0(v):''}" placeholder="0"
+        oninput="onCellInput(this,'${m}','${r.replace(/'/g,"\\'")}')"
+        onblur="onCellBlur(this,'${m}','${r.replace(/'/g,"\\'")}')"
+        onfocus="this.value=this.value.replace(/,/g,'')"></td>`;
+    });
+    html += `<td><button class="row-del" onclick="removeAssetRow('${r.replace(/'/g,"\\'")}')">삭제</button></td></tr>`;
+  });
+  // 합계 행
+  html += `<tr class="sum-row"><td>합계</td>`;
+  months.forEach(m => {
+    html += `<td data-sum-month="${m}">${fmtMoney0(colSum(m))}</td>`;
+  });
+  html += `<td></td></tr></tbody>`;
+  document.getElementById('asset-grid').innerHTML = html;
+}
+function renderAssetTopKpis(){
+  const months = STATE.assetBalances.months;
+  if (!months.length) return;
+  // 가장 최신 데이터 있는 월 + 직전 월
+  const filled = months.filter(m => colSum(m) > 0);
+  const cur = filled[filled.length-1] || months[months.length-1];
+  const prev = filled[filled.length-2] || null;
+  const curSum = colSum(cur);
+  const prevSum = prev ? colSum(prev) : 0;
+  const delta = curSum - prevSum;
+  // 카테고리 최대치
+  const rows = STATE.assetBalances.rows;
+  let top = {name:'-', val:0};
+  rows.forEach(r => { const v = getBal(cur, r); if (v > top.val) top = {name:r, val:v}; });
+  const [y,m] = cur.split('-');
+  const prevLbl = prev ? `vs ${prev.split('-')[0]}.${prev.split('-')[1]}` : '직전 월 없음';
+  document.getElementById('asset-top-kpis').innerHTML = `
+    <div class="atk"><div class="atk-label">총 자산 (${y}.${m})</div><div class="atk-value">${fmtMoney0(curSum)}<small style="font-size:11px; color:var(--ink-4); margin-left:3px;">원</small></div><div class="atk-sub">${rows.length}개 카테고리</div></div>
+    <div class="atk"><div class="atk-label">전월 대비</div><div class="atk-value ${delta>=0?'delta-pos':'delta-neg'}">${delta>=0?'+':'−'}${fmtMoney0(Math.abs(delta))}</div><div class="atk-sub">${prevLbl}</div></div>
+    <div class="atk"><div class="atk-label">최대 카테고리</div><div class="atk-value">${escapeHtml(top.name)}</div><div class="atk-sub">${fmtMoney0(top.val)}원</div></div>
+    <div class="atk"><div class="atk-label">월 추적 범위</div><div class="atk-value">${months.length}개월</div><div class="atk-sub">${months[0]} ~ ${months[months.length-1]}</div></div>
+  `;
+}
+
+/* 전체요약 탭에서 보여주는 자금 현황 — 새 잔액 기반 */
+function renderAssetSummaryFromBalances(){
+  const el = document.getElementById('asset-summary');
+  if (!el) return;
+  ensureAssetBalances();
+  const months = STATE.assetBalances.months;
+  // 현재 currentMonth와 가장 가까운 월 (정확히 일치 우선)
+  const target = months.includes(currentMonth) ? currentMonth : (months.filter(m => colSum(m) > 0).slice(-1)[0] || months[0]);
+  const rows = STATE.assetBalances.rows;
+  const total = colSum(target);
+  const items = rows.map(r => ({name:r, val:getBal(target, r)})).filter(x => x.val > 0).sort((a,b)=>b.val-a.val);
+  const palette = ['#0F80F6','#01A058','#FF9000','#7c2d12','#a855f7','#0891b2','#e11d48'];
+  const bar = items.map((it,i) => `<div class="share-seg" style="width:${total?(it.val*100/total).toFixed(2):0}%; background:${palette[i%palette.length]};" title="${escapeHtml(it.name)}">${total && it.val*100/total>=10 ? `<span class="share-seg-label">${escapeHtml(it.name)}</span>`:''}</div>`).join('');
+  const list = items.map((it,i) => `<div class="share-item">
+    <span class="share-swatch" style="background:${palette[i%palette.length]};"></span>
+    <span class="share-name">${escapeHtml(it.name)}</span>
+    <span class="share-pct">${total?(it.val*100/total).toFixed(1):0}%</span>
+    <span class="share-amt">${fmtMoney0(it.val)}원</span>
+  </div>`).join('');
+  el.innerHTML = `
+    <div class="asset-sum-kpis">
+      <div class="asset-sum-kpi"><div class="kpi-label">총 자산 (${target})</div><div class="kpi-value">${fmtMoney0(total)}원</div></div>
+      <div class="asset-sum-kpi"><div class="kpi-label">카테고리 수</div><div class="kpi-value">${items.length}개</div></div>
+      <div class="asset-sum-kpi"><div class="kpi-label">데이터 입력 월</div><div class="kpi-value">${months.filter(m => colSum(m)>0).length}/${months.length}</div></div>
+      <div class="asset-sum-kpi"><div class="kpi-label">상세 입력</div><div class="kpi-value" style="font-size:13px; color:var(--nhn-blue);">월 바 → 자산 탭</div></div>
+    </div>
+    <div class="share-bar" style="margin-top:14px;">${bar || '<div style="padding:12px; color:var(--ink-5); font-size:12px; text-align:center;">자산 데이터 없음 — 자산 탭에서 입력</div>'}</div>
+    <div class="share-list" style="margin-top:12px;">${list}</div>
+  `;
+}
+
+/* =========================================================
+   PLAN 뷰 — 정적 참고
+========================================================= */
+function renderPlanView(){
+  const cardRows = CARD_LIMITS.map(c => `<div class="plan-row"><span class="lbl">${escapeHtml(c.pay)} <small style="color:var(--ink-5);">한도 ${(c.limit/10000)}만</small></span><span class="val">${escapeHtml(c.note)}</span></div>`).join('');
+  const planRows = SPEND_PLAN.map(p => `<div class="plan-row"><span class="lbl">${escapeHtml(p.label)}</span><span class="val">${(p.amount/10000)}만<small>원</small></span></div>`).join('');
+  const html = `
+    <div class="plan-grid">
+      <div class="plan-block" style="grid-column:1/-1; background:#f9fbfd;">
+        <div class="plan-block-head"><h4>월 가계 예산</h4><span class="badge">매월 동일 적용</span></div>
+        <div class="plan-row" style="font-size:15px; border-bottom:2px solid var(--ink); padding-bottom:10px;">
+          <span class="lbl" style="font-weight:700; color:var(--ink);">월 총 예산</span>
+          <span class="val" style="font-size:18px;">${(MONTHLY_TOTAL/10000)}만<small>원</small></span>
+        </div>
+        ${planRows}
+      </div>
+
+      <div class="plan-block">
+        <div class="plan-block-head"><h4>카드별 한도 · 사용처</h4><span class="badge">실적 트래킹</span></div>
+        ${cardRows}
+        <div class="plan-note">전체요약 탭의 "카드별 실적(당월)" 박스에서 월별 실 사용액과 비교</div>
+      </div>
+
+      <div class="plan-block">
+        <div class="plan-block-head"><h4>대출 · 정기예금 수익</h4><span class="badge">26년 기준</span></div>
+        <table class="plan-table">
+          <thead><tr><th>구분</th><th>금액</th><th>금리</th><th>1년</th><th>1개월</th></tr></thead>
+          <tbody>
+            <tr><td>대출</td><td>100,000,000</td><td>2.55%</td><td class="neg">−2,550,000</td><td class="neg">−212,500</td></tr>
+            <tr><td>회사지원</td><td></td><td>2.00%</td><td class="pos">+2,000,000</td><td class="pos">+166,667</td></tr>
+            <tr><td><b>실납부</b></td><td></td><td><b>0.55%</b></td><td class="neg"><b>−550,000</b></td><td class="neg"><b>−45,833</b></td></tr>
+            <tr><td>신한정기예금</td><td>100,000,000</td><td>2.90%</td><td class="pos">+2,900,000</td><td class="pos">+241,667</td></tr>
+            <tr class="sum"><td>1년 순수익</td><td colspan="2"></td><td class="pos">+2,350,000</td><td class="pos">+195,833</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="plan-block">
+        <div class="plan-block-head"><h4>적금 · 청약 (월 납입)</h4><span class="badge">본 · 민성</span></div>
+        <table class="plan-table">
+          <thead><tr><th>항목</th><th>본 (만원)</th><th>민성 (만원)</th></tr></thead>
+          <tbody>
+            <tr><td>월급 (참고)</td><td>320</td><td>285</td></tr>
+            <tr><td>청년도약</td><td>70</td><td>70</td></tr>
+            <tr><td>주택청약</td><td>25</td><td>10</td></tr>
+            <tr><td>1년 적금</td><td>50</td><td>30</td></tr>
+            <tr><td>ISA</td><td>100</td><td>100</td></tr>
+            <tr class="sum"><td>월 납입 합계</td><td>245</td><td>210</td></tr>
+            <tr class="sum"><td>연간 합계 (1년)</td><td colspan="2" style="text-align:right;">4,550,000 / 54,600,000원</td></tr>
+          </tbody>
+        </table>
+        <div class="plan-note">코인·주식 미포함 / 청년도약·주택청약 포함 / 예금이자 + 인센티브로 추가 적립</div>
+      </div>
+
+      <div class="plan-block" style="grid-column:1/-1;">
+        <div class="plan-block-head"><h4>장기 적금 Plan (Y) — 청년도약 만기까지</h4><span class="badge">29.7 청년도약 만기</span></div>
+        <table class="plan-table">
+          <thead><tr><th>나이</th><th>시점</th><th>구간</th><th>월 (만원)</th><th>연 (만원)</th><th>누적 (만원)</th><th>비고</th></tr></thead>
+          <tbody>
+            <tr><td>29</td><td>26.01 첫계약</td><td>26.03</td><td>10,000</td><td>11,600</td><td>21,600</td><td></td></tr>
+            <tr><td></td><td></td><td>26.04~26.12</td><td></td><td>1,600</td><td>23,200</td><td></td></tr>
+            <tr><td>30</td><td></td><td>27.01~27.12</td><td></td><td>4,790</td><td>27,990</td><td></td></tr>
+            <tr><td>31</td><td>28.03.31 재계약</td><td>28.01~28.12</td><td></td><td>5,950</td><td>33,940</td><td></td></tr>
+            <tr><td>32</td><td></td><td>29.01~29.12</td><td></td><td>3,550</td><td>37,490</td><td>← 29.7 청년도약 만기</td></tr>
+            <tr><td>33</td><td>30.03.31 재계약</td><td>30.01~30.12</td><td></td><td>6,150</td><td>43,640</td><td></td></tr>
+            <tr><td>34</td><td></td><td>31.01~31.12</td><td></td><td>5,100</td><td>48,740</td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+  document.getElementById('plan-view-body').innerHTML = html;
 }
 
 function renderAssetSummary(){
@@ -1627,6 +1942,17 @@ function renderPlan(){
 }
 
 function renderAll(){
+  ensureAssetBalances();
+  // 특수 탭이면 그쪽만, 아니면 전체
+  if (currentMonth === '__assets__') {
+    renderAssetGrid();
+    renderAssetTopKpis();
+    return;
+  }
+  if (currentMonth === '__plan__') {
+    renderPlanView();
+    return;
+  }
   refreshInputCards();
   renderPills();
   renderPlan();
@@ -1635,8 +1961,8 @@ function renderAll(){
   renderFilterChips('bon'); renderList('bon');
   renderFilterChips('ms');  renderList('ms');
   renderSummary();
-  renderAssets();
-  renderAssetSummary();
+  // 전체요약 자금 위젯 — 자산 잔액 기반으로 변경
+  renderAssetSummaryFromBalances();
 }
 
 /* =========================================================
@@ -1735,6 +2061,7 @@ async function init(){
       const d = snap.data();
       STATE.tx = Array.isArray(d.tx) ? d.tx : [];
       STATE.assets = Array.isArray(d.assets) ? d.assets : [];
+      STATE.assetBalances = (d.assetBalances && typeof d.assetBalances === 'object') ? d.assetBalances : {};
       STATE.filters = (d.filters && typeof d.filters === 'object')
         ? Object.assign(JSON.parse(JSON.stringify(DEFAULT_FILTERS)), d.filters)
         : JSON.parse(JSON.stringify(DEFAULT_FILTERS));
@@ -1795,11 +2122,12 @@ async function init(){
     window.fb.subscribe((snap) => {
       if (!snap.exists()) return;
       const d = snap.data();
-      const incoming = JSON.stringify({ tx: d.tx || [], filters: d.filters || {}, assets: d.assets || [] });
+      const incoming = JSON.stringify({ tx: d.tx || [], filters: d.filters || {}, assets: d.assets || [], assetBalances: d.assetBalances || {} });
       if (incoming === _lastSavedJson) return;
       _lastSavedJson = incoming;
       STATE.tx = Array.isArray(d.tx) ? d.tx : [];
       STATE.assets = Array.isArray(d.assets) ? d.assets : [];
+      STATE.assetBalances = (d.assetBalances && typeof d.assetBalances === 'object') ? d.assetBalances : {};
       STATE.filters = (d.filters && typeof d.filters === 'object')
         ? Object.assign(JSON.parse(JSON.stringify(DEFAULT_FILTERS)), d.filters)
         : JSON.parse(JSON.stringify(DEFAULT_FILTERS));
